@@ -1,0 +1,54 @@
+RETURN
+
+WX2:
+
+RETURN
+
+WX3:
+
+RETURN
+
+WX4:
+
+RETURN
+
+WX5:
+;Set 
+RETURN
+
+WX6:
+
+RETURN
+
+CHECKCD:
+     MGD = 30000
+     TGD = GROUND_DISTANCE(38.4891,104.4232)
+     IF TGD<MGD THEN
+          MGD=TGD
+          GRT=1
+     ENDIF
+    
+     IF STAT!=GRT THEN
+          IF GRT=1 THEN
+               GOSUB WX1
+          ENDIF
+          IF GRT=2 THEN
+               GOSUB WX2
+          ENDIF
+          IF GRT=3 THEN
+               GOSUB WX3
+          ENDIF
+          IF GRT=4 THEN
+               GOSUB WX4
+          ENDIF
+          IF GRT=5 THEN
+               GOSUB WX5
+          ENDIF
+          IF GRT=6 THEN
+               GOSUB WX6
+          ENDIF
+     ENDIF
+RETURN
+
+ENHAP:
+RETURN

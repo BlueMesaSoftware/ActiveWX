@@ -1,0 +1,171 @@
+Requires windows 3.11 or higher and FSFS 
+
+Instructions for using wxadv.exe and wxadv2.exe
+
+- Included in the zip file are the following files.
+
+wxadv.exe  - Real weather adventure generator
+wxadv2.exe - Real weather adventure generator for FSFS ATC custom module
+stnlist.txt - A text file that is read to get the station coordinates
+all.rwx - A sample weather file
+inc.txt - A sample listing of stations to include in the adventure
+real_wx.txt - A sample adventure program
+wxadv.txt - This file
+
+Installation
+	Create a directory c:\tmprwx and unzip the zip file in this directory, 
+	or copy all unzipped files to this directory.  All filenames are 
+	hardcoded and the directory must be c:\tmprwx.  If anyone with 
+	Turbo C++ expeirence would like to do a user interface, I will gladly 
+	send you the source code for the program.  I am starting to travel 
+	again, and will not have time to work on it for some time.  I find 
+	it very enjoyable to fly through varying weather, therefore I thought 
+	I would make it available now to anyone else who was interested.  The 
+	program is manual to use, but not too dificult if you are familar with 
+	dos and Windows.  
+        Create an icon in windows that runs the program c:\tmprwx\wxadv.exe,
+        and one that runs the program c:\tmprwx\wxadv2.exe
+	Make the working directory c:\tmprwx.  See windows help under 
+	"icons, creating" if you are unfamiliar with how to do this.
+
+
+
+The Real Weather Data
+wxadv uses weather data that can be pulled from Curt Olson's weather page.
+The address for the weather data is 
+http://www.me.umn.edu/home/clolson/weather/new-wx.html
+
+The weather is divided into sections. All weather for the U.S. and Canada 
+is also avilable from one file. The file all.rwx is a file that was downloaded 
+from the web page.  I suggest overlaying all.rwx with which ever section you 
+wish to fly in.  Sometimes its easier just to download all weather.  This is 
+the starting point. You now have a file which is formatted. It must be called 
+all.rwx and reside in the c:\tmprwx directory.
+
+
+
+The station list
+I have included stnlist.txt.  If more stations are added to Curt's weather 
+page a new station list will also have to be downloaded.  The station list at
+Curts Web page is no longer formatted with ":"'s, so I suggest you have to use
+one in the zip file.  It must be called stnlist.txt and
+reside in the c:\tmprwx directory.  You can edit it to add more stations.
+
+
+Your Station List
+	I have included a sample file inc.txt.  This is a file that you edit
+	using either notepad in windows or edit in dos, enter each of the 
+	station ID's you will be flying over.  These are not always the 
+	VOR id's.  If you are looking for a particular city, I suggest you 
+	search the city name in stnlist.txt to find the station id.
+	Edit the inc.txt file by entering the 3 letter id followed by the  
+	<enter> key for each station you will be flying over.  Try to limit 
+	to 40 or less stations.  You really wont need this many though. 
+	At least I dont.
+
+
+Generating the adventure
+        After you have all the setup completed, click the icon you have 
+        created in windows.  If you want to generate a stand alone program,
+        click the wxadv icon, if you want and FSFS Custom module, click the
+        wxadv2 icon.  The program will then translate the all.rwx
+	file into an adventure file called real_wx.txt. Some of the data 
+	in all.rwx seem to be keyed manually, and typing errors do occur.  
+	If the program takes an error, copy the data for the stations that 
+	you want to fly over from all.rwx to another file.  Then rename that 
+	file to all.rwx and run the program again.  If you are still having 
+	problems,  Remove the station in the inc.txt file that appears after 
+	the last station that was processed and try again. 
+
+
+Compiling the "STAND ALONE ADVENTURE"
+	This is the easy part.  After you have added any custom modules
+	to real_wx.txt, copy real_wx.txt to your fs51 \adv subdirectory.  
+	Change to the \adv subdirectory and type aplc real_wx.  An adventure 
+	file called real_wx.adv will be created.  You will get a program too 
+	long error if you selected too many stations.
+
+
+Runing the "STAND ALONE ADVENTURE" 
+	Once in FS51 goto the adventure option and select the real_wx 
+	adventure.  The weather for the station you are closest too will 
+	be loaded.  As you fly closer to other stations, their weather will 
+	load automatically.  To determine which station is loaded, go to the 
+	weather menu and click on global.  You should see another area with 
+	the name sssWX where sss is the station id.
+
+
+For FSFS ATC custom modules
+        Real weather for FSFS ATC is now available with wxadv2.exe.
+This program is almost the same as wxadv.exe with a few exceptions.
+wxadv2.exe generates the real_wx.txt file as a custom module that can be
+included in an FSFS ATC adventure. Instead of compiling real_wx.txt as a
+stand alone adventure, copy it to your flightshop directory.  When you select
+the option to upload the flight plan, select real_wx.txt as a custom module.
+Select clear weather when uploading, or the weather may be changed by the
+FSFS ATC flight generator.
+
+Running the FSFS ATC module
+        The real weather will update after you are told to contact the tower.
+This is when the custom modules run for the first time.  Becuase FSFS ATC
+decides the departing runway without looking at the real weather, you may
+be assigned to a runway with dangerous tail winds.  If this is the case,
+you can manually change the wether through the world menu.  Select weather,
+then hit the "H" key. You will see the overlay weather area.  Select it, and
+then select winds.  Adjust the surface wind direction as needed.
+        The real weather stops updating after approach contact is made.  This
+is because surface winds are determined by FSFS ATC before landing.  The surface
+winds at the arrival airport may not match the runway assigned for landing.
+If this is the case, follow the steps above for changing the wind direction
+after contacting approach.  You will be close to the approaching airport,
+so no further updates will be required.  The surface wind layer will be
+deleted  by FSFS ATC, but adjust the next wind layer to a suitable direction
+for landing at the vectored runway.  (FSFS ATC determines the arrival runway
+when the adventure is uploaded to FS.  There is no way around this currently)
+        Weather reports (ctrl-W) will report the current weather.  The cloud
+layer reported will be the lowest layer.
+
+
+A Note about program length
+        I have had program too large errors when compiling adventures with
+many waypoints. Adding the real weather custom module will increase the size
+of the file further.  If you get this error, try reducing the number of waypoints
+and/or weather stations.
+
+Changing the approach distance
+        I have had a problem up to now with the 9 mile pattern with heavies.
+A way to change this is to add the program STS.ZIP from ftp.iup.edu.  This
+program will leave the source code in the FLTSHOP directory. Edit the source
+code by searching for 3 lines.
+        1) Search for "good hdg", and change the ># to (I suggest 15 NM)
+        2) Search for "pattern area", and change the <=# to (I suggest 15)
+        3) Search for "patter instruct", and change the ># to (I suggest 15)
+        This will give you 15 NM to line up with the runway.
+
+
+
+There are many formats of weather data, and although Curt has done alot 
+of work on the algorithms to process the weather formats, you never know 
+what kind of data you may get.  If you cannot absolutely get up and running, 
+drop me an email at j4cwheel@aol.com. Please send a copy of your all.rwx and 
+inc.txt.  I will try to figure out what data is bad.  I may not get back to 
+you for a while however.  
+
+I hope some people will get some use out of this.  
+I have really enjoyed having dynamic weather thanks to Curt and his 
+real weather page. Curt really wrote the heart of the program.  All I 
+had to do was translate it into FSFS adventure language. 
+
+Also thanks to my wife Cindy for her patience while I practiced my 
+C programming.
+
+This is freeware to anyone who wants it, but please don't use it for profit. 
+Also, please do not upload to compuserve.  Source code is available in 
+tubro C++ if you want it.
+
+P.S. - I know the coding methodology isnt the greatest, but I wanted to get
+it up and running as soon as I could with the time I had.
+I plead quilty to being a bad speller also.
+
+
+Have Fun - Jeff Wheeler

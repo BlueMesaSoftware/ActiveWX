@@ -1,0 +1,130 @@
+DESCRIPTION "Real weather adventure"
+
+DECLARE vDIGIT
+DECLARE GRT
+DECLARE MGD
+DECLARE TGD
+DECLARE vTemp
+DECLARE vTemp1
+DECLARE vTemp2
+DECLARE vTemp3
+DECLARE vTemp4
+DECLARE vCld1Bot
+DECLARE vCld1Top
+DECLARE vCld2Bot
+DECLARE vCld2Top
+DECLARE vCld1Cvr
+DECLARE vCld2Cvr
+DECLARE vVis
+DECLARE vBaro
+DECLARE vTT1
+DECLARE vTA1
+DECLARE vTT2
+DECLARE vTA2
+DECLARE vTT3
+DECLARE vTA3
+DECLARE vTT4
+DECLARE vTA4
+DECLARE STAT
+DEBUG_WINDOW ON
+STAT=0
+MGD=0
+WHILE 1
+REALWX:
+     GOSUB CHECKCD
+     GOSUB ENHAP
+ENDWHILE
+
+WX1:
+;Set ATL Weather
+  WEATHER "KCOSWX", 38.4891, 104.64, 38.4891, 104.24
+  WEATHER_CHAR 40, 10, 0, 0
+  WINDS 1, 0, FTOM( 1015 ), gusty, 290, 42, 0
+  VISIBILITY 10 
+  CLOUDS 1, 4472, 4823, userdefined, scattered4, 0, 0, 0
+  TEMPERATURE 1, 1881, 16, 0
+  BARO_PRESSURE 29.79, 0
+  STAT=1
+RETURN
+
+WX2:
+;Set BHM Weather
+     vCld1Top=9300 + MTOF(192)
+     vCld1Bot=8500 + MTOF(192)
+     vCld2Top=0 + MTOF(192)
+     vCld2Bot=0 + MTOF(192)
+     vTT1=FTOC(69)
+     vTA1=FTOM( 0 )
+     vTT2=FTOC(34)
+     vTA2=FTOM( 10000 )
+     vTT3=FTOC(-1)
+     vTA3=FTOM( 20000 )
+     vTT4=FTOC(-36)
+     vTA4=FTOM( 30000 )
+     vBARO=MBTOINHG(1010)
+     vVis=12.000000
+     WEATHER "BHMWX", 28.566666 ,81.750000 , 38.566666 ,81.750000
+     WEATHER_CHAR 2614, 4, 213, 33
+     WINDS 1, 0, FTOM( 1192 ),steady, 240, 13, 7.646199
+     WINDS 2, FTOM( 1192 ) , FTOM(  4392 ),gusty, 240, 11, 0.875214
+     WINDS 3, FTOM( 4392 ), FTOM( 6092 ),gusty, 234, 23, 15.817025
+     WINDS 4, FTOM( 6092 ), FTOM( 45000 ),gusty, 213, 33, 8.335262
+     CLOUDS 1, FTOM(vCld1Bot), FTOM(vCld1Top),userdefined,broken5, 3.919924, 300, 0
+     VISIBILITY vVis
+     TEMPERATURE 1,vTA1,vTT1,0
+     TEMPERATURE 2,vTA2,vTT2,0
+     TEMPERATURE 3,vTA3,vTT3,0
+     TEMPERATURE 4,vTA4,vTT4,0
+     BARO_PRESSURE vBARO,1
+     STAT=2
+RETURN
+
+WX3:
+
+RETURN
+
+WX4:
+
+RETURN
+
+WX5:
+;Set BNA Weather
+
+RETURN
+
+WX6:
+
+RETURN
+
+CHECKCD:
+     MGD = 30000
+     TGD = GROUND_DISTANCE(38.4891 ,104.4232)
+     IF TGD<MGD THEN
+          MGD=TGD
+          GRT=1
+     ENDIF
+    
+     IF STAT!=GRT THEN
+          IF GRT=1 THEN
+               GOSUB WX1
+          ENDIF
+          IF GRT=2 THEN
+               GOSUB WX2
+          ENDIF
+          IF GRT=3 THEN
+               GOSUB WX3
+          ENDIF
+          IF GRT=4 THEN
+               GOSUB WX4
+          ENDIF
+          IF GRT=5 THEN
+               GOSUB WX5
+          ENDIF
+          IF GRT=6 THEN
+               GOSUB WX6
+          ENDIF
+     ENDIF
+RETURN
+
+ENHAP:
+RETURN

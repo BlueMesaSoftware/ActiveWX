@@ -1,0 +1,6 @@
+ATL
+BHM
+MEM
+CHA
+BNA
+ANB

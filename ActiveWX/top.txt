@@ -1,0 +1,20 @@
+TITLE "Active Weather1"
+DESCRIPTION "Active weather adventure"
+
+DECLARE GRT
+DECLARE MGD
+DECLARE TGD
+DECLARE STAT
+
+DEBUG_WINDOW OFF
+STAT=0
+MGD=0
+ SCROLL "Welcome to Blue Mesa's Active Weather 98" 
+WHILE 1
+REALWX:
+    
+     GOSUB CHECKCD
+     GOSUB ENHAP
+ENDWHILE
+
+WX1:

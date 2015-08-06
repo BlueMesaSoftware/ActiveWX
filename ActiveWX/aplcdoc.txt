@@ -1,0 +1,3304 @@
+
+    INDEX: 
+            
+            APL Programming Environment
+            The Basic structure of FSFS APL programs
+            
+            
+            Language Features
+            Data Types
+            APL Commands Statements
+            Constants
+            Expressions/Operators
+            Functions
+            Variables
+            Weather Commands
+            Appendix
+            Problems/Solutions
+            FSFS APL FAQ
+            Custom Modules
+            Adventure Directory 
+            Key values
+            Compiler Error Messages
+            
+            
+            Adventure Programming Language (APL) 
+            Introduction: 
+            The Adventure Programming Language (henceforth referred to as APL) 
+            is a scripting language that comes packaged with the Flight 
+            Simulator Flight Shop (henceforth referred to as FSFS) add-on for 
+            Microsoft's Flight simulator version's 5.0 and above (henceforth 
+            referred to as FS5/FS6/FS98). FSFS is an Aircraft and adventure 
+            add-on for FS5/6/98 that greatly enhances the Flight Simulator 
+            experience. It is in general four add-on's in one. 
+            Aircraft construction factory: Allows for the creation of 
+                Aircraft with custom painting that will work within the basic 
+                flight model of flight simulator according to design of the 
+                Aircraft author. 
+                
+                
+                Flight Dynamics editor: Allows the editing of an Aircraft's 
+                flight dynamics to be used within FS5/6/98. 
+                
+                
+                ATC Workshop: creates ATC controlled adventures based on Flight 
+                plan and aircraft information entered and compiled within the 
+                user interface. 
+                
+                
+                Adventure Programming Language: The scripting language under 
+                which the ATC workshop ATC controlled adventures are generated 
+                and compiled. 
+                
+                
+                This page will be for the most part concentrating on add-on #4 the 
+            Adventure programming language, and adventure creation from scratch, 
+            not adventure creation via the ATC workshop. However much of the 
+            information within the two add-on's overlap, so I have included 
+            information related to the process of creating of adventures via 
+            APL. I have also included information regarding the Freeware 32-bit 
+            version (APLC32.EXE). However this should by no means be seen as a 
+            complete source of the features/limitations of the APLC32 compiler. 
+            See the APLC32.DOC file for complete details. It should be noted 
+            references to "APL" refer to the language itself and include both 
+            compilers unless indicated otherwise. This document also assumes 
+            familarity with Flight Shop, and how it interfaces with Flight 
+            Simulator. 
+            Thanks to Martin Smith for providing comments/corrections for 
+            APLC32. 
+            Page by Ernie Alston 71302.3415@Compuserve.com)   
+    
+    
+
+
+
+
+
+    INDEX: 
+            
+            The APL Programming Environment 
+            APL programs can be written in any standard ASCII text file editor. Once completed and saved
+they must be converted to binary form so they can be executed within Flight Simulator.
+
+The APLC compiler will compile text files into binary form for FS5. The compiler can be 
+executed from the DOS command prompt. For use with FS6/98 they must either be compiled with
+the APLC.EXE into .ADV format and converted using the Microsoft (henceforth referred to
+as MS) supplied converters FSCONV.EXE and  FSCONV98.EXE  to FS6/98 format or compiled 
+using the Freeware APLC32 compiler (henceforth referred to as APLC32). 
+
+APL32 compiled .ADV files prior to version 1.18 will work FS98, however you'll need ver 1.18 
+and above to take advantage of FS98 APL functionality. Also APLC32 as its name implies is a 32-bit 
+compiler and thus will only work on a Win32 machine (Win95/NT). APLC32 versions 1.18 and above will 
+support both FS6 & FS98 functioanlity.
+
+
+Syntax:
+         APLC   "Input file" ["Output File"]
+
+
+
+The first argument after the program name is the name of the APL source file (APLC assumes
+a ".TXT" file extension, so that is optional).
+
+The second argument is the name of the adventure binary file (any extension given is stripped,
+and ".ADV" is used). 
+
+Example:
+
+C:\FS51\ADV> APLC  TESTAPL1.TXT   TESTAPL1.ADV
+
+
+The APLC will also accept input from the keyboard or stdin (ie you could type your whole program
+and compile it without using a text editor). The first argument then must be a single hyphen "-", 
+followed by the 2nd argument which in this case is mandatory.
+
+
+Example:
+
+C:\FS51\ADV> APLC  -  TESTAPL1
+DECLARE NUM
+NUM = 95
+PRINT NUM
+^C
+
+
+This would compile into an output file titled TESTAPL1.ADV. Ctrl-C ends the keyboard input, and
+starts compilation.
+
+When the FSFS ATC Workshop is installed, the APLC.EXE Compiler is installed in your \ADV directory.
+However the APLC compiler is just one executable file,and can be run from any directory.
+
+If errors in syntax are encountered during compilation they will be displayed on the screen or 
+console window complete with line numbers. The line number pointing to the location of the
+error includes blank lines. So it would be that line in your editor, no need to worry about
+the count being off due to blank lines, they are included in the count.
+
+ APLC32 contains extra command line options which can be used at compile 
+ time.
+
+-c              Check syntax only, do not write the output file
+-k              Attempt to convert old source file as it is compiled 
+-o              Disable extra optimisations
+-oo             Disable all optimisations
+-s              Send error output to stdout rather than stderr
+-w              Do not produce warnings during compilation
+-v              Turn off assignment checks for system variables
+-a              Turn off altitude compensation
+-fy or -fn      Turn on or off output directory forcing
+-x              Turn off any extensions, useful to check compatibility
+-95             Generate output for FS6  (ver 1.18+).
+-98             Generate output for FS98 (ver 1,18+)
+
+ See the APLC32.DOC file for more details of these command line options.
+
+
+            
+    
+    
+
+
+
+
+
+    INDEX: 
+            
+            The Basic structure of FSFS APL programs 
+            APL is a programming language similar to the old DOS GW BASIC Language in format and syntax. 
+
+
+Example:
+
+ TITLE "CMI to ORD adventure"
+ DESCRIPTION "Champaign to Chicago adventure"
+ ;Test adventure 
+ ;
+ DECLARE "variable names"
+ ....
+ ....  (program code)
+ END 
+
+
+Unlike languages like "C" or PASCAL no particular keyword or value is required (like main,
+start, begin, etc) to successfully compile and execute an adventure. Though none of the 
+keywords listed in the above example are required, we shall consider this the standard format
+of what should be in every adventure.
+
+If you intend for your adventure to run continous throughout a flight or trip, a good practice
+might be to have a main program loop, where you can have your program jump to other sections 
+of the program temporarily, but always ending up back in the main loop. This technique will 
+allow you to easily add custom modules to your adventure without disturbing the flow of 
+control from the main program block.
+
+ 
+ Example:
+
+ WHILE KEY != KV(CTRL "Q") 
+   GOSUB START
+   GOSUB TAKEOFF
+   GOSUB CLIMB
+   GOSUB CRUISE
+   GOSUB DESCEND
+   GOSUB LAND 
+   GOSUB CUSTOM_MODULE
+   GOSUB END
+ ENDWHILE
+            
+            
+            
+    
+    
+    INDEX: 
+            
+              LANGUAGE FEATURES/LIMITATIONS 
+
+  Language Features  
+
+  BASIC like syntax.
+
+  A command can start anywhere on a line, so indention can easily be applied.
+ 
+  A space or blank characters can be applied anywhere within the program code. When a
+      space is required by program syntax any number of spaces are allowed. (as long as 
+      the total number of characters on the line, do not exceed 80 )
+
+  The Language syntax is case in-sensitive. The variables "TEMP" and "temp" are the 
+      same. The compiler converts everything to uppercase anyway (except for string 
+      constants). So those who want to employ fancy stuff like hungarian notation, etc the
+      compiler won't care.
+
+  Access to read, and write to many Flight Simulator Variables.
+
+  Support of limited Keyboard interaction.
+
+  
+    Example:
+
+           PRINT " Test message"
+           Print " Test Message"
+  
+
+ Both of these lines will compile without errors.
+
+  Additional APLC32 features 
+  Support of functions and procedures 
+  Local variables
+  String variables
+  Preprocessor directives (include, pragma)
+  64K file size limit does not apply.
+  Detection of aplc32 compiled adventures.
+  Line size limit up to 2048 with lexical item limit of 512.
+
+ At the start of an adventure, if compiled by APLC32 and declared the program; the variable
+ "aplc32_version"  will contain the APLC32 compiler version number. Non-Zero if the adventure
+ was compiled by APLC32
+
+  Example: 
+
+   declare aplc32_version
+   
+      if aplc32_version > 0 then
+         print "Compiled with APLC32 ver ",aplc32_version
+         wait 1
+      endif.    
+
+    
+
+  Language Limitations  
+  
+   One command or statement allowed per line.
+
+  
+   Example:
+
+           PRINT "test message";Print "test 1 message"
+   
+      This will not produce a compile error, but the text to the right of the semicolon ';' will 
+      be ignored by the compiler.
+
+ No support of string variables
+
+ No suport of File I/O
+
+ Number range only between  -32768, and +32767
+
+ Very little support of flight control manipulation.
+
+ 64K binary adventure size limit.
+
+
+
+            
+    
+    
+
+
+
+
+
+    INDEX: 
+            
+              DATA TYPES: 
+There really is only one data type in FSFS APL which appears to be of type 64 bit floating 
+point, with 32 bits for the integer part and 32 bits for the fractional part, truncated to a 
+precision of 16 bits.
+ 
+What does this all mean ? Well basically the number range can only be between approx -32768 
+and  +32767.  Which explains the Library functions mtof(), and ftom() functions which basically
+multiply or divide by 1.15 You couldn't reference an altitude of greater than 32,767 without 
+these functions. But even with these functions the highest altitude you can reference in an 
+adventure is 37,682 ft. 
+
+Some commands may allow numbers greater or less than what is usable by APL, if that occurs the 
+number will simply be truncated to 16 bits precision during Compile time. In APL numbers are 
+not very precise, so precise caluculations (if there is such a thing) likely will not be very
+accurate. Though the use of expanded trigonometic functions in APL have been reasonably 
+accurate.
+
+Variable's of type number must be declared before they can be used, but can be declared 
+anywhwere within the program. Multiple variables can be declared on the same line (subject to 
+linesize limitations).
+
+
+Example:
+         DECLARE first,second,third;
+         DECLARE linestr 
+
+
+  Both of these lines will compile without errors.
+
+It should be noted that although you can declare a variable anywhere within the program, that 
+variable will not exist unless the program executes the line on which the variable has been 
+declared on.
+
+Hex notation can be used anywhere decimal notation can.
+
+
+  
+ Example: 
+
+     cruise = 15.9375
+     cruise = 0x000F.F000
+
+
+ Both are valid assignment statements.
+
+Constraints: Number range between  -32768, and +32767
+
+
+Example: 
+           DECLARE heading, cruise_alt;  <---     Declaration
+                   heading = 230;        <---     Initialization/Assignment
+                   cruise_alt = 32000;   
+           DECLARE new_alt
+                   new_alt = cruise_alt - 1000
+
+
+ A variable cannot be declared, and initialized on the same line.
+
+ Although variable names can contain numeric characters, a variable
+ name cannot begin with a numeric character.
+
+
+ Example:
+
+     Declare heading  = 0;    <--- illegal construct
+
+
+
+
+
+String Constants:
+
+ String constants can only be contained within double quotes, and cannot be used as variables.
+ Thus string constants can only be used with statements or functions that accept string constants
+ as an argument.
+
+ Only the standard ASCII character set (256 characters) can be used in string constants. Basically
+ that means any character there's a key for in the stanbdard QWERTY keyboard can be used. 
+ Extended or special characters cannot be referenced inside a string. 
+
+ 
+
+  Example:
+   TITLE       "This is a string Title"
+   DESCRIPTION "this is a string description"
+   PRINT       "This is a string constant"
+   END
+
+   TSTRING = "Test String";    <---  Illegal, string variables not supported (APLC).
+ 
+
+
+
+ String Variables: (APLC32)
+
+
+  Syntax  Variable_name$ = "string constant" [variable_name$]
+
+
+ With APLC32 1.16 came the capability of creating pseudo string variables.
+ String constants can be assigned to variables who's name ends with
+ the '$' character. 
+ 
+ Example: String$ = "Test string"   <- Initialize string variable
+          test_proc(string$,55)      <- pass string to procedure
+          test_funct(string$)       <- pass string to function 
+ 
+ String variables can also be assigned the value of other string
+ variables. 
+ 
+ Tmpstring$ = string$
+ 
+ See related statements PRINT_STRING, SCROLL_STRING, PLAY_STRING, 
+ DEFINE PROCEDURE, DEFINE FUNCTION
+
+            
+            
+            
+    
+    
+    INDEX: 
+            
+            
+  COMMANDS/STATEMENTS: 
+
+For this section text in brackets [] refer to "optional" keywords.
+
+
+  syntax: IF "expression" THEN
+             "statements..."
+          [ELSEIF]  <----------------- ELSEIF statement is optional.
+          [ELSE]    <----              ELSE is optional.
+          ENDIF     <----              ENDIF is mandatory.
+
+
+   
+
+ ADV_KEYS 
+ 
+  syntax:  ADV_KEYS [ADD] [DELETE] [CLEAR] "keys"
+ 
+
+  Controls Keyboard inputs allocated to the adventure. When a KEY is added to the list of keys,
+  that key is no longer available to Flight Simulator. So be carefull not to allocate keyboard
+  functions (ex the autopilot) you still wish to be accessible direct from Flight Simulator.  
+  But this is a good way to make keys that are only accessible via the Menu through the 
+  adventure. The GPWS_X adventure series is a good example of this, making some of the autopilot
+  functions normally only accesible via the Menu available through the adventure.
+
+  You must first add the keys to the adventure key list before you can use them in an adventure.
+
+ ADD:         Adds a Key to the adventure key list.
+
+ DELETE: Removes a Key from the Adventure key list, no error will occur if the key is not on the list.
+
+ CLEAR:    Deletes all the keys currently used by the adventure from the ADV_KEYS list.
+
+ There is a slight difference if no keys are on the list. This basically makes all the keys 
+ available to "both" flight simulator, and the adventure (unless the key is re-directed by an 
+ ONKEY statement). Making for some very unpredicatable behavior from both Flight Simulator, 
+ and your adventure. So it is not advisable to reference a KEY in APL until its been added
+ to the Key list.
+
+ 
+
+ Examples:
+
+  ADV_KEYS  ADD, KV(CTRL "C");  <--- Adds Control-C 
+
+  ADV_KEYS ADD,KV(CTRL "Q"), KV(CTRL "R"), KV(CTRL "S"); <-- add Ctrl Q, R, and S
+ 
+
+ When not used with with the control keys (CTRL-SHIFT-ALT) the keys specified are case "sensitive".
+
+ 
+  ADV_KEYS ADD,KV("q"), KV("Q"); <--- Add's both upper, and lower case "Q" to key list.
+ 
+  The FSFS manual says the function keys F1 to F12, are not supported.
+ 
+  ADV_KEYS DELETE  KV(CTRL "Q"), KV(CTRL "R");   <--- Delete Ctrl-Q, and Ctrl-R keys from the key list.
+
+  ADV_KEYS CLEAR;     <--- Delete all remaining Keys added with (ADV_KEYS ADD).
+ 
+
+
+   
+
+  DECLARE
+  Declares or creates a numeric variable.
+
+  Variables A to Z are reserved, don't try and declare them or the compiler will display errors.
+  However variables A-Z can be re-assigned new values. 
+
+  You cannot assign a value to (or initialize) variables on the same line they are declared. 
+
+  Example:
+ 
+          DECLARE  altitude, climb_rate, cruise; 
+ 
+
+   
+
+  DEBUG_PRINT
+ 
+  Syntax:  DEBUG_PRINT  "string constant"
+ 
+  Prints the string constant to the right of the command in the Debug window. The debug window
+  is limited to 80 characters per line, and 4 lines or a maximum of 255 characters. Newline or 
+  carriage return/linefeed is included in the count. Though the manual doesn't say whether a 
+  carriage return/linefeed counts as one character each (or two), or as one character combined.
+
+  DEBUG_PRINT is not supported in FS6, but is supported in FS98.
+
+  See also DEBUG_WINDOW.
+
+
+   
+
+  DEBUG_WINDOW
+ 
+  Syntax:  DEBUG_WINDOW ON/OFF
+ 
+  A debugging tool to display run-time error messages.
+
+  With the debug window turned "ON" error messages are displayed in the window which is seen 
+  on the top of the main view window. It can be moved by clicking and dragging it to a new 
+  location, if you have your mouse enabled.
+
+  I myself have never had any need for this function, there are other better methods IMO for 
+  dealing with logic errors in programs. However some error messages can only be seen in the 
+  debug window, so it may be of some use in debugging.
+
+  Example:
+ 
+          DEBUG_WINDOW ON;   <--- Turn on Debug window.
+ 
+
+ DEBUG_WINDOW is not supported in FS6, but is supported in FS98.
+
+ See also DEBUG PRINT
+
+
+   
+  DEFINE FUNCTION  (APLC32) 
+ 
+  Syntax: DEFINE FUNCTION "func_name"(param1,param2,param3)
+ 
+
+  Functions work just like procedures "except" that they can return values to the 
+  main program using the RETURN statement. Because a function always  returns some 
+  value, that value must be captured upon return.
+
+ 
+ Example:
+
+   sinex = FUNCTION sine(X)
+ 
+ A RETURN statement is required in a function, however the function is not required to logically 
+ execute the return statement. In other words you could create a condition where the RETURN 
+ statement is never executed and the compiler will not flag it as an error.
+
+ 
+ Example: 
+         DEFINE FUNCTION error_code()
+          declare e_code
+          e_code = 0
+          if e_code = 1 then
+                RETURN error_code   
+          endif
+         ENDDEFINE
+ 
+
+ Functions cannot return string variables.
+ 
+ Except for the returning of a value functions work exactly as
+ procedures.
+
+ See also DEFINE PROCEDURE
+
+
+
+   
+
+  DEFINE PROCEDURE: (APLC32)
+
+  Syntax:  DEFINE PROCEDURE proc_name(param1,param2,etc)
+
+
+ User defined procedures supported by the APLC32 compiler only.
+ 
+ The procedure is called by its name (proc_name), and parameters are passed by 
+ value not reference (IOW the actual value is passed not its memory address). 
+ This means the variable retains its value outside the procedure, and will not 
+ be changed if the variable holding the value inside the procedure is changed.
+ 
+ The number of parameters in the function call, must be the same as the parameter 
+ list where the procedure is defined.
+
+ 
+  Example:
+      rwy$ = " Runway 27R "  
+      rwy_dir =   270
+      wind_dir = 120                       <--- Main program block
+      speed =  8
+      say_winds(rwy$,rwy_dir,wind_dir,speed)
+      ...
+      ...
+      ...
+    DEFINE PROCEDURE  say_winds(rwy$,rwy_dir,wind_dir,speed) 
+                                                                          ; These are not the
+                                                                          ; same variables as
+                                                                          ; in the main block.
+     LOCAL xwnd_comp,pi
+     pi = 3.14159 
+      
+     xwnd_comp = get_xwind(rwy_dir,wind_dir,speed,pi)      
+
+     Print_string rwy$
+     Print "Winds are ",wind_dir," at ",speed," knots, crosswind ",xwnd_comp," knots"
+
+    ENDDEFINE          
+    ....
+    ....
+    DEFINE FUNCTION  get_xwind(rwy_dir,wind_dir,speed,pi) 
+                                                                                      ;You can re-use
+                                                                                      ;the same variable
+    LOCAL ax,angle                                                      ;names because they
+      angle = rwy_dir - wind_dir                                    ;are local to the function
+      ax = angle
+      ax = (ax / 360) * (2*pi)
+      if ax > (pi/2) then
+        ax = pi-ax
+      endif
+      ax = ax - (ax*ax*ax)/6 + (ax*ax*ax*ax*ax)/120 - (ax*ax*ax*ax*ax*ax*ax)/5040
+      RETURN speed * ax       <-- return crosswind component
+    ENDDEFINE          
+ 
+ As you may have noticed there's no "return" statement in the procedure "say_winds",
+ that's because a return is implied. The Enddefine acts just like a "return", when 
+ it is encountered program control is returned to the line just after the procedure 
+ call. However you can expressly insert return statements inside the procedure, though
+ such insertions defeat the purpose of having a procedure.
+
+ Your procedure cannot have the same name as a reserved word, or function (system or 
+ user defined), or other procedures. However the compiler will not complain if you give 
+ it the same name as a variable or label. So be carefull to use unique naming with procedures.
+
+ The variables declared with the LOCAL keyword are local to the procedure (notice I used the 
+ same variable names within the main program, procedure, and function). That means it can 
+ only be used or referenced while the program is within the procedure. Once the program returns
+ from the procedure, those variables are gone. There is no limit to the number of LOCAL variables 
+ that can be declared or the number of times the LOCAL keyword is used.  Local variables cannot 
+ be the same as reserved words, nor can they be the same as the variables passed to the procedure.
+ If the LOCAL variable is the same name as a global variable the global variable cannot be referenced
+ until the program exists the procedure.
+ 
+ There is no limit to the number of parameters on the parameter list, however if there are no parameters
+,a pair of parens '()' must follow the procedure name anyway. 
+ 
+ Example:   sin() <-- no parameters in procedure call.
+ 
+
+ Technically you could recursively call a procedure (ie call a procedure from within itself) however the 
+ local variables will be the same. In other words a recursive call does nothing more then point the program
+ back to the beginning of the procedure with all the variables retaining their values as if you never left.
+ 
+ Note: The descriptions above apply to DEFINE FUNCTION except that functions must return a value.
+
+ See also DEFINE FUNCTION
+
+
+   
+
+  DESCRIPTION: 
+
+  Syntax:  DESCRIPTION  "string"
+
+
+  Program description, a more detailed description of what the program is/does. This will be 
+  in the same menu (in Flight Simulator) as the TITLE under the section labeled "Description:"
+
+  Multiple lines of descriptions are allowed but the total size of the whole description can 
+  be no more than 255 characters. The quotes also count as 1 character each, so 4 lines of 
+  descriptions add 8 characters to the total description string size.
+
+  Example:
+
+          DESCRIPTION "Test Description"
+          DESCRIPTION "Test flight"
+
+
+   APLC32:   Quotes not counted in description length 
+
+  See also: TITLE
+
+
+  END
+  Ends adventure, that annoying window will pop up like 2 seconds later in FS5 verifying that 
+  the adventure has indeed ended. FS5 will then continue as it is at that point.
+
+ FOR  (Incremental or counting Loops) 
+   
+
+ Syntax:  FOR "initialize" TO "End" [BY] "increment"
+                      "expression"
+                        .....
+               NEXT "increment"
+
+
+ All the lines after the FOR statement will be executed, as long as the variable initialized, 
+ and incremented is between the values of the numbers immediately before, and after the "TO"
+ keyword.
+
+ 
+ Example: 
+
+ FOR A = 1 TO 5;        <-- (When keyword "BY" is omitted, default  incrementation of "1" used).
+         PRINT A;
+ NEXT A
+
+ Prints numbers  1,2,3,4,5  
+ 
+
+ 
+ Example:  
+
+  FOR A = 5 TO 25 BY 5;  <-- Increment by 5's
+       PRINT A
+  NEXT A
+
+  Print numbers 5,10,15,20,25
+ 
+
+
+ Example: 
+  FOR A = 25 TO 5 BY -5   <-- De-crement by 5's
+       PRINT A
+  NEXT A
+
+  Print numbers 25,20,15,10,5
+ 
+
+  See Also IF, WHILE
+
+
+
+  GOSUB 
+
+  
+ Syntax:  GOSUB "label"
+          ....
+          ...
+          LABEL:
+           ....
+           ....
+          RETURN         
+
+
+  Subroutine call, a set of commands is called in another part of the program from a location 
+  with the intention to return to that location after the set of commands have completed 
+  execution.
+
+  An absolute necessity for Custom modules, especially if you plan on not knowing or caring 
+  what the custom module is.
+  
+ APLC32:  Labels declared within procedures/functions can only be referenced
+ from within in the function/procedure block.
+  
+
+  Example:   
+
+   if A = 1 THEN
+      GOSUB MARK1
+   ENDIF
+   ...
+   ...
+   MARK1:
+    ...    
+    ...
+   GOSUB MARK2
+   RETURN  
+   ...
+   MARK2:
+   RETURN
+
+
+ The use of calling another GOSUB from a location where control was transferred from a previous
+ GOSUB is called "Nesting" sub-routines. In APL the maximum number of subroutines that can be 
+ nested is 50. If you needed to go past 50, you could use a GOTO (but why would you need 
+ to nest Gosub's 50 deep ??). 
+
+ In this language GOSUB's may actually be more dangerous than GOTO's. One reason is the compiler 
+ doesn't require a corresponding RETURN statement for a GOSUB, you could pile up multiple GOSUB's 
+ without returns, easily losing track of what RETURN goes to what GOSUB.  A nightmarish situation 
+ if someone else has to maintain your code, or if you don't touch if for say 6 months then have to 
+ get back to it. (but a good way to make your code difficult to follow if that's what you want )
+
+ The use of Procedures (APLC32-FS6/98)  will help avoid this problem by enforcing modular structure
+ requiring a closing RETURN from the called subroutine, and prohibiting mid entry via a GOTO call.
+
+ The RETURN statement will return control the line "after" the line the last GOSUB was executed from. 
+
+ Interestingly enough the compiler will compile the program successfully if a RETURN statement 
+ exists with no GOSUB.
+
+ APLC32:  You cannot use goto or gosub to jump into a procedure block, since
+ labels are local to procedures
+
+ See Also GOTO, LABEL, ONKEY.
+
+
+
+
+  GOTO 
+ 
+   Syntax:  GOTO "label"
+
+  Jumps to execute code that follows the target label.
+
+ In structured programming Languages the use of GOTO is considered a no-no for just about any reason,
+ because the havoc it can wreak on program flow control, and maintenance. Also there are functions 
+ and procedures that can be created to do the job much better. However APL is not a structured 
+ language and the use of GOTO is pretty much a necessity, use it as needed. I would suggest however 
+ using GOSUB, whenever program control needs to be returned from where the GOTO started from.
+
+ If you understood what a GOSUB was you know what a GOTO is, except you can't add a RETURN statement.
+
+  For example See Label:
+
+  See also GOSUB,LABEL, ONKEY
+
+
+
+
+  IF
+
+  Syntax:  IF "expression" THEN 
+                   "statements"...
+               [ELSEIF] "expression" THEN
+                   "statements"...
+               [ELSE] 
+                   ... 
+               ENDIF
+
+
+ Program flow control by Evaluation of a conditional expression to true or false.
+ 
+ The keyword THEN is required to be on the same line as an IF or an ELSEIF statement to the right
+ of the "expression".
+
+  
+ In the case of evaluating expressions 0 (zero) = (False) and non-0 =  (True). 
+
+ If the expression evaluates as (True) all commands after the "THEN" are processed until the next 
+ matching ELSE, ELSEIF, or END is reached.
+
+ All IF statements must have at least a THEN on the same line, and
+ optional accompanying ELSEIF on one of the following lines, as well 
+ as a matching ENDIF.
+
+ ELSEIF can be used as often as is needed, ELSE can only be used once 
+ in an IF THEN construct, and should be applied after the last ELSEIF
+ statement.
+
+ The ELSEIF's, and ELSE statements are evaluated only if the expression
+ to the right of the IF statement evaluates to False.
+
+ If the IF statement is False, All the ELSEIF expressions are evaluated
+ until one of the ELSEIF's evaluates as True.
+
+ If an ELSEIF statement evaluates as true, all the lines that follow 
+ it are executed until the next ELSEIF, ELSE, or END statements; the
+ successive ELSEIF's, and the ELSE statements are not evaluated, the 
+ program will jump to the END. 
+
+ If Neither the IF, or any of the successive ELSEIF statements evaluate 
+ as True, the lines following the ELSE statement (till the ENDIF) will
+ be executed.
+
+  
+
+ In short only one of the IF,ELSEIF, or ELSE sets will be executed based on any condition.
+
+
+  Example 1:  
+             A = 1
+             IF A = 1 THEN;       <-- Result of evaluation will be non-0 (True)
+               ...
+             ENDIF;               <--  Matching ENDIF required for every IF)
+
+             IF A != 1 THEN;      <--  Result of evaluation will be 0 (False)
+               ...
+             ENDIF
+
+ Example 2:  IF  A = 1 THEN       <--  THEN required to be on same line as IF
+                     B = 2
+              ELSEIF A = 2  THEN
+                     B = 3
+              ELSEIF A = 3  THEN  <-- THEN required for each ELSEIF)
+                     B = 4
+              ELSE                <--  ELSE is optional
+                     A = 4
+              ENDIF      
+
+
+
+  ( If all the If and elseif conditions evaluate to false the line
+    following the "else" (A = 4) will be executed.  )
+
+Note: When using the KV() function with an IF statement using the "and"
+or "or" clause will generate an error when run through the converter.
+ 
+
+Example:
+         if key = kv("K") and msgflag = 1 then ; <---- un-convertable
+          ...     
+         endif.
+
+         if key = kv("K") then ; <---- Okay to convert
+          ...             
+         endif.
+
+
+
+  See also WHILE , FOR
+
+
+
+
+  INCLUDE  (APLC32) 
+ 
+  Syntax: INCLUDE "filename"
+ 
+
+ Preprocessor directive, inserts a text file between the include directive and the next program 
+ statement. The filename must be enclosed in quotes.
+ 
+ Usefull, if you have a library of routines and you wish to include them in every adventure, also
+ usefull for including custom modules. See the  APLC32.DOC  file for details on the file searching 
+ priority path usage, nesting ,etc.
+  
+
+
+
+
+  LOAD_SITUATION 
+ 
+  Syntax: LOAD_SITUATION "filename"
+ 
+
+  Loads situation (.STN) files. The .STN extension is "not" assumed. The filename must be contained
+  in quotes. The full path can be included with the filename, else APL will look for it in the \PILOTS 
+  directory.
+
+
+  Example:
+
+           LOAD_SITUATION "TEST.STN"
+
+
+
+
+
+ NORTH_LATITUDE
+ Specifies that positive latitude coordinates represent north latitude, and negative south
+ 
+ SOUTH_LATITUDE
+
+ Specifies that positive latitude coordinates represent south latitude, and negative north
+
+ EAST_LONGITUDE
+
+ Specifies that positive longitude coordinates represent east longitude, and negative west.
+
+ WEST_LONGITUDE
+ 
+ Specifies that positive longitude coordinates represent west longitude, and negative east.
+
+ What does all this mean you say ? 
+
+
+ Very simple the FS5 coordinate variables are in decimal form instead of degrees, minutes, and seconds,
+ so it cannot distinguish between East, West, North, and South, so you have to tell it which part of 
+ the FS world your decimal coordinates refer to.
+
+ By default it assumes the Latitude value is North, and Longitude value is West (ie North_Latitude, 
+ West_Longitude). To apply your coordinates to East Longitude, you must first declare your longitude
+ coordinates are to be East by the statement EAST_LONGITUDE. 
+ 
+ You must define which LAT/LON values you want to be positive "before" using APL commands that make use 
+ of the coordinates.
+
+
+
+
+  ON GOTO, ON GOSUB.
+
+  Syntax ON GOTO "expression" GOTO label1, [Label2],...
+
+  The result of the expression is evaluated and truncated to an integer.
+
+
+  Example:  
+ 
+  A = 2
+
+  ON A + 2  GOTO Mark0,Mark1,Mark2,Mark3,Mark4,Mark5
+
+
+ A + 2 equals four, so the program will branch to the label named "Mark4:" .
+
+ If the expression (A+2 in this case) evaluates to less than zero or greater than the number of labels,
+ then the line is not executed, and the next one is. Yea Yea I know the manual says "greater than or 
+ equal to the number of labels". But I want to stress the first label is "zero" not one. So the first 
+ label is "zero" (ex Mark0).  This must be one of those "C" Language things they say the language is 
+ supposedly derived from.
+
+ Just remember the first branch is zero (0), not one (1). Do you think I said it enough times ?.
+
+ What about ON GOSUB ??
+
+ No difference really, if you use ON GOSUB, the following RETURN statement will return control to the 
+ line after the ON GOSUB.    
+  
+ See also GOTO, GOSUB
+
+
+
+
+  ONCRASH, ONSTALL, ONKEY.
+
+  Syntax ONCRASH GOSUB "label"
+
+  ONCRASH,ONSTALL,ONKEY are the 3 special subroutines in APL, what they do is override the default in 
+  favor of the specified routine beginning at "label". Here you can put in your own subroutine, like 
+  say to avoid seeing that annoying graph that pops of after a crash,etc.
+  
+  If one special subroutine is active the others will not work, if the condition that would have 
+  activated the others still exists after the routine exits, then it will be called. For instance if a 
+  Stall condition exists, and the ONSTALL routine is active at the time , any routines referenced by 
+  ONKEY will not work as long as the Stall condition  exists. 
+
+  There is a limit to the number of ONKEY statements allowed in an adventure, I think its 16, but I'm
+  not quite sure. Keep that in mind if your writing a custom module (ie don't hog them all, like they
+  did with GPWS).
+  
+
+
+
+   PLAY ".wav filename"
+
+  Syntax:   PLAY ".wav filename"
+
+
+   Play's a .wav file.
+   
+ Pathnames can be included with the filename, if no path is included the adventure will look for the 
+ file in the \advwav directory one level below your flight simulator directory. Or whatever directory 
+ is specified as "wave directory = " in your FSFS.INI file.
+
+ The filename is treated like a string constant by the compiler, don't forget to enclose it in quotes.
+
+ If the file does not exist in the location specified, nothing will play and the next command will be 
+ executed. No error messages or anything like that will occur.
+
+ Successive Play commands will play successive .wav files immedially with no delay, so you can cut and 
+ mix wave files, and play them in succession, and they should sound pretty close to how they would
+ sound in your sound mixer.
+
+
+   Example:  
+            Play "c:\fs5\adv\right.wav"
+            Play "c:\fs5\adv\turn.wav"
+            Play "c:\fs5\adv\heading.wav"
+            Play "c:\fs5\adv\210.wav"
+    
+
+ See the FAQ section about the format that a wav file should be to be properly played in FS5.
+
+ The manual says "the maximum string length is 8 characters plus the .WAV extension". I'm not sure 
+ exactly what that means, since it also says you can include path names. And Windows 95 can hold more 
+ 8 character filenames, does that mean that even in W95 your limited to 8 chars ? Someone will have to 
+ tell me this since I don't have Win95 yet.
+
+ It should be noted that pathnames may significantly increase the size of your program if you play a 
+ lot of wav files in your adventure. Something to consider shortening if you encounter the dreaded
+ "file too large" error.
+
+
+
+ PLAY_STRING (APLC32)
+
+ Syntax   Print_string  "variable$"
+
+ 
+ The print_string statement works the same as the PLAY statement, except
+ that it takes "single" a string variable as an argument.
+
+ See also PRINT_STRING,SCROLL_STRING
+
+
+
+
+   PLAY_VIDEO (APLC32)
+
+  Syntax:   PLAY ".vid filename"
+
+
+ Plays a flight simulator video file recorded in Flight simulator.
+
+ User interaction is disabled while the video is playing. Flight
+ simulator variables take on the values of the aircraft based
+ on the movements of the aircraft while the video is playing.
+
+ I would guess video files prior to FS6 would be incompatible.
+ 
+
+
+
+ PRECISION 
+
+ Syntax: 
+ 
+ PRECISION "Left", "Right", Right-Max-digits" 
+
+
+ Basically works as a numeric format specifier, it controls how many digits are displayed to the left 
+ or right of the decimal point.
+
+  Left:       The number of digits to display to the left of the decimal. If the number has less than 
+                the specified number of digits, zero's will be added to complete the the numeric display. 
+
+  Right-Min:  The minimum number of digits to display to the right of the decimal.
+
+  Right Max:  The maximum number of digits to display to the right of the decimal (the minimum value 
+                   takes precedence).
+
+
+  Examples: (on number 12.34)
+
+   
+  PRECISION 1,0,0;    (Display 1 digit to the left of the decimal, 
+                       No digits to its right.
+
+  Print 123.456    Output:  "12"
+
+  PRECISION 1,1,0;  
+                     
+ Print 123.456    Output:  "12.3" <-- even though the max is zero, it 
+                                      will still display the 1 specified
+                                      digit to the right.
+
+  PRECISION 1,1,1;  
+                     
+ Print 123.456    Output:  "12.3"
+
+   PRECISION 1,1,2;  
+                     
+   Print 123.456    Output:  "12.3"  <--- the Max is two, but the min 
+                                          is 1.
+
+   PRECISION 1,2,2;  
+                     
+   Print 123.456    Output:  "12.34"
+   
+
+
+   PRECISION 2,2,2;  
+                     
+   Print 123.456    Output:  "12.34"
+   
+
+   PRECISION 3,2,2;  
+                     
+   Print 123.456    Output:  "012.34"
+
+
+   PRECISION 3,2,3;  
+                     
+   Print 123.456    Output:  "012.450"
+
+   
+  Got it ??
+
+ The use of the Precision can get a bit hairy, You should defer to the floating point numbers when 
+ setting precision rather than worry about setting the precision back. For whole numbers use the 
+ INT(X) function to display a whole number without trailing or preceeding zero's. Then you don't have 
+ to worry about re-setting the PRECISION again to re-display floting point values later on.
+
+ Also take note of the possibility of other custom modules re-setting the PRECISION value, and affecting
+ the display of your numbers. 
+
+
+
+
+ PRINT 
+
+ Syntax   Print "string constant", variable,...or combination therof.
+
+
+ Displays output in the FS message window.
+
+ A comma ',' can be to be used a delimiter between string constants, other string constants and 
+ variables.
+
+ String constants must be enclosed in double quotes (ie one beginning, and one ending). 
+
+ Arithmentic operations can be done within a print statement.
+
+ It is recommended a WAIT be placed after a print statement, if you want a human being to read it. 
+ Androids will be okay without the wait.
+
+
+
+  Example:
+  A = 2
+  Print  "Last time I checked ",A," + ",A," Still Equalled ",A + 2
+
+  Output  "Last time I checked 2 + 2 Still Equalled 4"
+
+
+  Print statements can be multi-line as well.
+
+
+  Example:
+
+  A = 2
+  Print  "Last time I checked ",A," + ",A,
+  print  " Still Equalled ",A + 2
+
+  Output:  "Last time I checked 2 + 2 Still Equalled 4"
+
+
+
+
+
+ PRINT_STRING (APLC32)
+
+ Syntax   Print_string  "variable$"
+
+ 
+ The print_string statement does what it implies, prints a string, but not a string constant,
+ a string variable. There is only "one" argument allowed with this statement (ie you can only 
+ use one string with each print_string call). You cannot mix, and merge numeric and string 
+ variables together either with the PRINT, SCROLL, or PLAY statements nor their corresponding 
+ "_STRING" statements.
+  
+
+
+  PRINT_TIME 
+
+  Syntax:  PRINT_TIME "time"
+
+
+  Specifies how long (in seconds) messages displayed in the FS message window by PRINT and SCROLL commands
+  are displayed. This will affect all subsequent messages until reset.
+
+  If another PRINT or SCROLL command follows, that will display immediately, giving this command no effect.
+
+  The default value is 5, the maximum is 20 seconds.
+
+  It should be noted there's a distinct difference in the delay period when print_time is used in FS5, than when in FS6. 
+  You'll have to check this when updating or converting adventures originally written for FS5.
+
+
+
+
+  RESET ADVENTURE
+  Re-starts the currently running adventure.
+
+
+
+
+  RESET_SITUATION
+  Self explanatory, resets the current situation.
+
+
+
+
+  SCROLL 
+
+ Syntax   Scroll "string constant", variable,...or combination therof.
+
+
+  Works the same as Print except it comes out like the old news ticker at Times Square. In other words
+  it displays the text in message window moving from right to left. Like how the ATIS, and other messages
+  come out.
+
+  You can combine succesive scrolls command to display one long Message (like for example a clearance). 
+  Just end the line with a comma ',' and start the next line with a SCROLL statement.
+
+  With succesive SCROLL commands the total number of characters the buffer will hold is 400, everything
+  else is truncated. The begining of the next SCROLL comand (the new one, not the one continued (with 
+  the comma) from the last one), will pause if there are characters still left in the buffer after the
+  last command. However your Print statement will not pause, and so you won't see any text of a print 
+  command in the message window if the buffer still has characters from the previous SCROLL.
+ 
+  The syntax, and usage is exactly the same as PRINT.
+
+  See also PRECISION, WAIT, SCROLL
+
+
+
+
+ SCROLL_STRING (APLC32) 
+
+ Syntax   Scroll_string  "variable$"
+
+ 
+ Works like print_scroll except it takes a "single" string variable as its argument.
+
+ See also PRINT_STRING,PLAY_STRING
+
+
+
+  SETPOSITION 
+
+      Syntax: SETPOSITION "latitude", "longitude", "altitude"
+
+  Does what it infers, positions the Aircraft at the position, and altitude specifiied in the LAT,LON, 
+  and ALT argument. Flight Simulator will pause for a bit while resetting the position of the Aircraft.
+  The highest precision is 1/10 of a second.
+
+  Example:  SETPOSITION 33:33, 22:22, 300
+
+  The Manual recommends that a WAIT 4 be the next command executed after a SETPOSITION.
+ 
+ APLC32:  Though APLC would allow the setposition parameters to be exclosed within parens
+      Ex SETPOSITION(33:33,22:22,300). APLC32 will not allow this construct. In any event the parens is not a 
+      documented feature of APLC, so I suggest you don't use them. 
+  
+
+
+  
+  TITLE 
+
+   Syntax: TITLE "string constant"  
+
+
+  Program title listed as part of the file header, the text between the quotes will be in the adventure
+  listing in FS5 under OPTIONS/ADVENTURE-FACTORY, under the section titled "Choose from the following 
+  adventures.."
+
+  A Title can only be max 30 characters, this includes all characters including quotes, whitespaces, 
+  etc. Only one Title is allowed per adventure, so be sure not to include a title with custom modules.
+
+  Example: 
+
+       TITLE "Sample adventure, SAN to SFO"  
+
+
+
+
+
+  WAIT 
+
+  Syntax WAIT ["time"], [KEYPRESS]
+
+  Specifies how long the adventure should pause before executing the next command.
+
+  If the "time" argument alone is used, that specifies (in seconds) how long the adventure should pause.
+
+  If the Keypress argument alone is used, then the adventure will pause until the user has pressed a 
+  Key.
+  
+  If both arguments are used the adventure will pause for whichever time is shortest either the seconds
+  specified in the "time" argument, or until the user presses a key, whichever comes first.
+
+  The WAIT command requires at least one argument either the "time" "keypress" or both.  
+  
+  Example :
+          Wait 2;                <-- wait 2 seconds
+          Wait 0  Keypress;      <--  clears the KEY variable, supposedly
+          Wait 10 Keypress;      <--  wait 10 seconds or for a keypress whichever comes first.
+
+  See also ADV_KEYS.
+
+
+
+
+  WHILE 
+
+ (Conditional Loops)
+
+  Syntax:
+ 
+         WHILE "expression is true " 
+                 ...
+                 ...
+         ENDWHILE
+
+
+  Every WHILE statement must have a matching ENDWHILE statement following it.
+
+  All the lines following the While statement up to the ENDWHILE statement will be executed
+  as long as the WHILE expression evaluates to true.
+
+ 
+  Example:  
+            A = 2
+            WHILE A < 10
+                  PRINT " A = ",A
+                  A = A + 2
+            ENDWHILE 
+    
+   Prints  2,4,6,8
+
+  See also IF,FOR
+
+
+
+  ";"  (Comments)
+  
+ Anything to the right of a semicolon on a line is ignored by the APLC compiler. Comments can be placed
+ anywhere in a program to the right of a semicolon. 
+
+
+ Example:
+
+   ;Test adventure 
+
+   print "2 + 2 = 4"; Comment: Adding two plus two.
+
+  
+    Comments can be placed to the right of program statements, and expressions.
+
+
+
+
+
+
+ Label:
+ What are labels ?  They basically are Marked positions in your program where you can have control of 
+ the program transferred. In other words you have your program jump from one part of program (using 
+ GOSUB,GOTO, ONCRASH, and ONKEY statements).
+
+ Any word that ends with a colon ":" can be used as a label or Mark.
+ 
+ Multi word labels are not allowed (ie no spaces in between). Labels can have the same name as a 
+ variable (but why would you want to do that ?), but must be unique to other labels. Labels can appear 
+ anywhere within the program. Like variables labels are case in-sensitive.
+
+
+   Example:
+
+     A = 1
+   WHILE A < 50 
+     IF A = 25
+        GOTO MARK1  <--- goto label named Mark1
+     ENDIF
+     A = A + 5
+   ENDWHILE
+   ...
+   ...
+   MARK1:           <--- Label Mark1
+   A = 99
+   END
+
+            
+            
+            
+            
+            
+    
+    
+    INDEX: 
+            
+            
+
+
+  WEATHER COMMANDS
+ 
+ The Weather commands allow an adventure to create weather conditions like the ones that can be created
+ from the WORLD/WEATHER menu.
+
+ It would be best to have a good understanding how to create weather from the menu before trying it in 
+ an adventure.
+
+
+
+ WEATHER 
+
+ Syntax  WEATHER "name", lat1,lon1,lat2,lon2
+
+
+ Creates a new weather area identified by "name" (25 char's max), with end points at coords (lat1,lon1),
+ (lat2,lon2). These lat lon cordinates will form a weather line similar to a front that stretches along 
+ a straight line.
+
+
+     (Lat1,Lon1) * <------------------> *  (Lat2,Lon2)
+
+ 
+ Only one weather area can exist in FS5 at any one time. The WEATHER command creates the weather area 
+ and determines its size. When a weather area is created, any pre-existing weather area created by an 
+ adventure (the current one or previous ones) is deleted.
+
+
+ Example
+
+  WEATHER "WXAREA1", 38.27805, 43.85878, -85.60792 
+
+
+
+  
+
+  WEATHER_CHAR  
+
+  Syntax:  WEATHER_CHAR "width", "transition", "course", "velocity"
+
+
+ Short for weather characteristics, specifies the characteristics of the weather area defined by the 
+ last WEATHER command (this and the previous adventure).
+
+ Width = the width of the weather system in miles (nautical ?)
+
+                ______________________
+                ______________________  <-------------  Transition
+               |                                      | <-------------|    
+               |                                       |               |
+     Lat1,Lon1 * <------------------> *  (Lat2,Lon2)     | Width
+               |                                       |               |
+               |______________________| <-------------|
+                ______________________  
+
+ Transition = The transition area , think of the transition area is the outer border of the weather 
+               area. The wider the area the less abrupt the change in weather will be as the Aircraft
+               flies through it.
+
+ Course  =  The direction (magnetic) the weather area is moving (this is of course overidden by the wind
+            speed, and direction if the weather area is containing within a wind layer).
+
+ velocity =  The velocity the weather area is moving in knots.
+
+
+ Example  WEATHER_CHAR 50,5,90,15
+
+          (defines an area 50 NM Wide, with a trasition area of 5 miles, bearing 090, and traveling 15 
+           knots).
+
+
+  CLOUDS "layer","base","top","type","coverage","turbulence","deviation","icing".
+
+
+ Syntax:
+         CLOUDS "layer","base","top","type","coverage","turbulence","deviation","icing".
+
+  Defines cloud settings within an adventure weather area in one of the 3 layers of clouds (really only 
+  2 layers are available as if 3 layers are used, the third one must be a thunderstorm). After the 3 
+  layers are defined in an adventure, any other attempts to define new cloud layers will be ignored. If 
+  a clouds command targets an existing layer, it will overwrite and replace that layer (this also means
+  using the DELETE argument will delete the target layer.
+
+  If the cloud layer falls within the range of a wind layer, the clouds will move the same direction, 
+  and speed as the wind layer it is in.  
+
+  Layers have no hierachy, meaning layer one has no order or priority over the other layers. Layers are
+  just designations in space.
+
+  When changes are made to a weather area, the changes likely will take several seconds to show up in 
+  the FS5 visual window  
+
+  Example:
+ 
+          CLOUDS 1,500,100,stratus, scattered 4,5,10,0
+
+  Limitations on CLOUDS parameters are determined by "Type" selected, below is a table listing the range
+  limits for CLOUDS parameters.
+
+ "Type" "Base" (meters)"Thickness" (meters) "Coverage" (fs5.1+) "turbulence" "deviation"
+  Keyword        min  max min max min max min max max
+
+  cirrus                4800 14000    3   100 clear      scattered  0  18   0
+  cirrostratus      4800 14000    3     5 broken7    overcast   0  18   0
+  cirrcumulus      4800 14000    5   300 scattered2 broken6   36 109   0
+  altostratus        1800  7000   15   300 broken7    overcast   0  18   0
+  altocumulus      1800  7000   30  1000 scattered2 broken6   36 109   0
+  stratoculmulus    100  1500  100  1000 scattered2 overcast  36 109 100
+  nimbostratus       100  1500  300  1200 broken6    overcast   0  18  20
+  stratus                100  1500   30   600 scattered4 overcast   0  18  20
+  cumulus               100  1500  100  5000 scattered2 overcast  36 109 200
+  cumulonimbus     100  6000 1500  9000 wide       dense    146 255 200
+  thunderstorm     100 14000    3 10000 clear      overcast   0 255 200
+
+
+ FS5.1 or higher is required for cloud types other than  cumulonimbus,
+ and user-defined (thunderstorm).
+
+ Cloud coverage is defined in 9 segments of coverage, which refer to 
+ eighth's of coverage, or no coverage.
+
+
+
+   segment coverage
+
+      0  clear
+      1  scattered1
+      2  scattered2
+      3  scattered3
+      4  scattered4
+      5  broken5
+      6  broken6
+      7  broken7
+      8  overcast      
+
+
+ Cumulonimbus type use the thunderstorm system in FS5, which differs from the standard
+ cloud format, with only 3 segments of coverage available.
+
+       Wide        widely scattered
+       Scattered   scattered
+       Dense       dense.
+
+
+ 
+  CLOUDS "layer" [DELETE]
+
+  Deletes clouds from the currently defined weather area, this includes weather areas
+  defined by previous adventures. 
+
+
+  
+  TEMPERATURE
+
+  Syntax:  TEMPERATURE  "layer","altitude","temp","range"
+
+  creates or modifies temperature layer in the currently defined weather area.
+  
+  Altitude - meters MSL
+  Temp     - degrees Celsius
+  Range    - day/night temperature variation.
+  
+ (note the day/night range variation is global to all temperature layers.)
+     
+ TEMPERATURE "layer", DELETE
+
+
+
+  WINDS 
+
+
+  Syntax  WINDS "layer","base","top","type","direction","velocity","turbulence"
+ 
+  creates or modifies a wind layer in the currently defined weather area.   
+
+  base - meters MSL
+  top    meters MSL
+  type   (steady or gusty)
+  direction (degerees magnetic)
+  velocity (knots)
+  turbulence  (factor of 0 - 255) (0= no turbulence; 255 very turbulent)
+
+  WINDS "layer" DELETE
+
+  deletes wind layer from the currently defined weather area.
+
+
+( Surface winds have magnetic direction (to correspond with rwy headings), and winds
+  aloft have degrees true. In order o set surface winds layer, the base value must be 0).
+
+
+
+  BARO_PRESSURE
+
+  Syntax BARO_PRESSURE "pressure", "drift".
+ 
+  Sets the barometric pressure (Altimeter, QNH) of the currently defined weather area.
+
+  pressure - inches of mercury.
+  
+  drift    - non-0 (TRUE) -> the value drifts, 0 (FALSE) no drift.
+
+  
+
+  
+
+  VISIBILITY
+
+
+  Syntax:  VISIBILITY "distance"
+
+   Sets the visibility of the currently defined weather area.
+
+  distance = statute_miles.
+
+ The unit of measure is "statute" miles.
+
+ Note: At least one cloud layer must be defined for the visibility feature to work.
+       visibility is set from the ground to the lowest cloud base defined.
+  
+
+
+            
+    
+    
+    INDEX: 
+            
+            
+   
+  EXPRESSIONS:
+
+     Unary Operators
+
+  -(n)              negative number
+  NOT            logical negation
+  +                 Addition
+  -                 subtraction
+  *                 Multiplication
+  /                 Floating point division (3/2 = 1.5)
+  IDIV            Interger division       (3 IDIV 2 = 1)
+  IREM          modulus (integer remainder)
+  %               modulus (integer remainder)
+  &                Bitwise AND
+  |                 Bitwise OR
+  XOR         Bitwise exclusive OR
+  ^                Bitwise exclusive OR
+  =               Equality / Assignment
+  !=              Not equal to
+  <               Less than
+  <=              Less than or equal
+  >=              Greater than or equal.
+  AND           Logical AND
+  &&               Logical AND
+  OR              Logical OR 
+  ||                Logical OR
+
+            
+            
+            
+            
+            
+    
+    
+    INDEX: 
+            
+               
+     
+   FUNCTIONS:
+               
+ CTOF("temperature")         Convert Celsius temperature to Farenheit  
+ FTOC("temperature")         Convert Farenheit  tempoerature to Celsius   
+ FTOM("feet")                      Convert Feet units to Meters
+ Inrange(value, low,high)     TRUE (1) if value >= low and value <= high 
+ Int(value)                            Returns integer part of value
+ Mtof(meters)                      Convert Meters units to Feet
+ Mbtoinhg(pressure)           Convert millibars to inches of mercury
+ Inhgtomb(pressure)           Convert inches of mercury to millibars
+ Kmtonm(distance)             Convert kilometers to nautical miles
+ Nmtokm(distance)             Convert nautical miles to kilometers 
+ Nmtosm(distance)             Convert nautical miles to statute miles
+ Smtonm(distance)             Convert statute miles to nautical miles
+ Ground_Distance(lat,lon)   Returns ground distance in natical miles
+                                              between lat,lon and Planes lat,lon.
+ Air_Distance(lat,lon)           Returns Air distance in nautical miles
+                                              between lat,lon and Planes lat,lon.
+ Radial(lat,lon)                    Returns angle in true degrees from lat,lon
+                                              to plane's lat,lon 
+ Glideslope(lat,lon)           Returns glideslop to lat,lon in degrees. 
+ Degrees(angle)              Converts angle into deg, min, secs, returns degrees
+ Minutes(angle)               Converts angle into deg, min, secs, returns minutes
+ Seconds(angle)             Converts angle into deg, min, secs, returns seconds
+
+ FS6/98 functions:
+
+ Ground_Distance4(lat1,lon1,lat2,lon2) Returns the ground distance between two
+                                       specified coordinates.  
+ 
+ FS98 only functions:
+
+ Course_Inrange(heading,min,max)  True if heading >= min and heading <= max. Takes
+                                  into account 360 deg radials.
+
+            
+            
+            
+    
+    
+    INDEX: 
+            
+               
+
+ 
+  Flight Simulator VARIABLES:
+
+  With regards to boolean types TRUE = non zero number, FALSE = 0.
+
+                                     value type         Modify ?      
+
+  Adf_Active                                    boolean              No       Returns TRUE if ADF is tuned to a station.
+  Adf_Alt                                         meters               No       Altitude of ADF station (0 if not tuned)
+                                                                   (manual does not indicate of altitude is MSL
+                                                                    or not, assume MSL)
+  Adf_Freq                                       Khz                           Frequency ADF reciever is tuned to.
+  Adf_Lat                                         degrees              No       Latitude of ADF station (0 if not tuned)   
+  Adf_lon                                          latitude             No       Longitude of ADF station        
+  Adf_Radial                                     degrees true         No       Radial from ADF station
+  Autopilot_Altitude                           meters               Yes      Autopilot Altitude hold value.
+  Autopilot_Altitude_Hold                   boolean              Yes      TRUE if Autopilot Altitude hold is activated.
+  Autopilot_Approach_Hold               boolean              Yes      TRUE if Autopilot Approach hold is activated.
+  Autopilot_Attitude_hold                   boolean              yes      True if pitch and bank hold is activated.
+  Autopilot_Back_Course_Hold         boolean              Yes      True if back course hold is activated.
+  Autopilot_Heading                  degrees magnetic     Yes      Heading value for autopilot to hold.
+  Autopilot_Heading_Hold             boolean              Yes      True if Autpilot heading hold is activated.
+  Autopilot_Localizer_Hold           boolean              Yes      True if Autopilot localizer hold is activated
+  Autopilot_Master                   boolean              Yes      True if autopilot is on.        
+  Autopilot_Nav_Hold                 boolean              Yes      True if NAV1 heading hold is activated.
+  Autopilot_Wing_Leveler             boolean              Yes      True if Wing leveler is activated.           
+  Barometric_drift                   boolean              No       True if Gyro Drift is enabled. 
+  Barometric_Pressure                inches               No       Current barometic pressure.
+  Brake_Left_Position                integer              No       0=off, 32767=full on
+  Brake_Right_Position               integer              No       0=off, 32767=full on
+
+  Cloud_High_Active                  boolean              No       True if a high cloud layer is active.
+  Cloud_High_Base                    meters               No       Altitude MSL of base  of high cloud layer.
+  Cloud_High_Coverage                fraction             No       Coverage of high cloud layer.
+  Cloud_High_Icing                   boolean              No       True if high cloud layer has icing conditions
+  Cloud_High_Top                     meters               No       Altitude MSL of top of high clould layer.
+  Cloud_High_Turb                    integer              No       Turbulence of high clould layer.
+  Cloud_High_Type                    integer              No       Type of low clould layer.  
+
+  Cloud_Low_Active                  boolean              No       True if a Low cloud layer is active.
+  Cloud_Low_Base                    meters               No       Altitude MSL of base of low cloud layer.
+  Cloud_Low_Coverage                fraction             No       Coverage of low cloud layer.
+  Cloud_Low_Icing                   boolean              No       True if low cloud layer has icing conditions
+  Cloud_Low_Top                     meters               No       Altitude MSL of top of low clould layer.
+  Cloud_Low_Turb                    integer              No       Turbulence of low clould layer.
+  Cloud_Low_Type                    integer              No       Type of low cloud layer.  
+
+  Cloud_Thunder_Active              boolean              No       True if a Thunderstorm cloud layer is active.
+  Cloud_Thunder_Base                meters               No       Altitude MSL of base of Thunder cloud layer.
+  Cloud_Thunder_Coverage            fraction             No       Coverage of Thunder cloud layer.
+  Cloud_Thunder_Icing               boolean              No       True if Thunder cloud layer has icing conditions
+  Cloud_Thunder_Top                 meters               No       Altitude MSL of top of Thunder clould layer.
+  Cloud_Thunder_Turb                integer              No       Turbulence of Thunder clould layer.
+  Cloud_Thunder_Type                integer              No       Type of Thunder cloud layer.  
+
+  Com_Freq                          MHz                  Yes      Frequency COM radio is tuned too.
+  Course                            degrees magnetic     No       Wind corrected heading.
+  Elevator_trim_Position            integer              No       -16383=full nose down,16383=full nose up
+  Emergency_Failure                 bitmap               Yes      bit 0=high oil temp
+                                                                  bit 1=low oil pressure
+                                                                  bit 3=right fuel tank leak
+  Engine_Type                       integer              No       0=piston engine
+                                                                  1=jet engine
+                                                                  2=no engine  
+  Flaps_left_position               integer              No       0=up, 32767=down
+  Flaps_Right_position              integer              No       0=up, 32767=down
+  Gear_1_Position                   integer              No       0=up, 32767=down
+  Gear_2_Position                   integer              No       0=up, 32767=down
+  Gear_3_Position                   integer              No       0=up, 32767=down 
+  Ground_Altitude                   meters               No       Altitude MSL of ground under plane.
+  Hour                              hours                Yes      current time hour (0-23)
+  Imark                             boolean              No       True if Inner Marker is on
+  Key                               integer              No       Modified scan code of last key; 0 if a wait  
+                                                                  command timed out.
+  Left_Aux_Fuel_level               gallons              No       Fuel remaining in left auxilary tank. 
+  Left_Main_Fuel_level              gallons              No       Fuel remaining in left main tank.   
+  Magvar                            degrees              No       Magnetic variation; the difference between
+                                                                  true and magnetic north. Magnetic heading = true
+                                                                  heading - MAGVAR.
+  Minute                            minutes              Yes      current time minutes
+  MMark                             boolean              No       True is middle marker is active    
+  Nav1_freq                         Mhz                  Yes      Frequency NAV1 radio is tuned.
+  Nav2_freq                         Mhz                  Yes      Frequency NAV2 radio is tuned.
+  Omark                             MHz                  No       True of outer marker indicator is on. 
+  On_Ground                         boolean              No       True if plane is on the ground                        
+  Overspeed_Warning                 boolean              No       True if overspeed warning is on.
+  Parking_Brakes                    boolean              No       True if parking brakes are on.
+  Plane_Alt                         meters               No       Planes altitude MSL
+  Plane_Bank                        degrees              No       Planes bank angle, 0 = level, positive values
+                                                                  indicate bank to the left. 
+  Plane_heading                     degrees              No       Plane's magnetic heading.               
+  Plane_Lat                         degrees latitude     No       Planes latitude
+  Plane_lon                         degrees longitude    No       Plane's longitude  
+  Plane_Pitch                       degrees              No       Plane pitch: 0=level, positive values indicate
+                                                                  pitch up.   
+  Random                            fraction             No       Pseudo-random value 0<- x < 1 
+  Retractable_Gear                  boolean              No       0=fixed gear, 1=retractable gear.
+  Right_Aux_Fuel_level               gallons              No       Fuel remaining in Right auxilary tank. 
+  Right_Main_Fuel_level              gallons              No       Fuel remaining in right main tank.   
+  Rudder_Pedal_Position             integer              No       -16383=full left, 16383=full right
+  Season                            integer              Yes      Season for scenery effects: 
+                                                                  0= winter
+                                                                  1=spring
+                                                                  2=summer
+                                                                  3=autumn             
+  Second                            seconds              Yes      Current time second     
+  Slew_System_Active                boolean              No       True is slew mode is on. 
+  Smoke_System_on                   boolean              No       True is smoke system is activated 
+  Stall_Warning                     boolean              Yes      True is stall warning is sounding
+  Temperature_High_Alt              meters               No       Altitude of high temperature layer
+  Temperature_High_Temp             Celcius              No       Temperature of high temperature layer
+  Temperature_Low_Alt               meters               No       Altitude of low temperature layer
+  Temperature_Low_Temp              Celcius              No       Temperature of low temperature layer
+  Temperature_Mid_Alt               meters               No       Altitude of mid temperature layer
+  Temperature_Mid_Temp              Celcius              No       Temperature of mid temperature layer
+  Temperature_Surface_Alt           meters               No       Altitude of surface temperature layer
+  Temperature_Surface_Temp          Celcius              No       Temperature of surface temperature layer
+  Trans_freq                        integer              Yes      4 digit transponder code.
+  Velocity                          knots                No       Plane's current true airspeed.
+  Velocity_Indicated                knots                No       Indicated airspeed.  
+  Velocity_Y                        meters/second        No       Vertical speed rate
+
+  Vor_1_active                      boolean              No       True if NAV1 radio is tuned to a VOR
+  Vor_1_Alt                         meters               No       Altitude of station tuned in on NAV1
+  Vor_1_Dme                         nautical miles       No       Distance to station tuned in on NAV1
+  Vor_1_Dme_Avail                   boolean              No       Ture is station tuned on NAV1 is providing 
+                                                                  DME info. 
+  Vor_1_Glide_slope                 degrees              No       Glideslope indicated on VOR1 
+  Vor_1_GS_Avail                    boolean              No       True if station tuned on NAV1 is providing 
+                                                                  Glideslope info.  
+  Vor_1_Localizer_Avail             boolean              No       True if station tuned in on NAV1 radio is ILS.
+  Vor_1_Lat                         degrees latitude     No       Latitude of station tuned in on NAV1.
+  Vor_1_Localizer                   degrees true         No       Localizer course indicated by VOR1
+  Vor_1_Lon                         degrees longitude    No       Longitude of station tuned in on NAV1. 
+  Vor_1_Obs                         degrees              Yes      Radial to station tuned in on NAV1 radio.
+  Vor_1_Radial                      degrees true         No       Radial to station tuned in on NAV1.
+
+
+  Vor_2_active                      boolean              No       True if NAV2 radio is tuned to a VOR
+  Vor_2_Alt                         meters               No       Altitude of station tuned in on NAV2
+  Vor_2_Dme                         nautical miles       No       Distance to station tuned in on NAV2
+  Vor_2_Dme_Avail                   boolean              No       Ture is station tuned on NAV2 is providing 
+                                                                  DME info. 
+  Vor_2_Lat                         degrees latitude     No       Latitude of station tuned in on NAV2.
+  Vor_2_Lon                         degrees longitude    No       Longitude of station tuned in on NAV2. 
+  Vor_2_Obs                         degrees              Yes      Radial to station tuned in on NAV2 radio.
+  Vor_2_Radial                      degrees true         No       Radial to station tuned in on NAV2.
+
+  Wind_Low_Base                     meters               No       Altitude of low winds aloft layer.
+  Wind_Low_Dir                      degrees true         No       Heading low winds aloft layer.     
+  Wind_Low_Top                      meters               No       Altitude MSL of top of low winds aloft layer.
+  Wind_Low_Turb                     integer              No       Turbulence factor of low sinds aloft layer.
+                                                                  0=no turbulence  255=very turbulent.
+  Wind_Low_Type                     integer              No       0-steady, 1=gusty.    
+  Wind_Low_Vel                      knots                No       Wind speed of low winds aloft layer.
+
+  Wind_Mid_Base                     meters               No       Altitude of mid winds aloft layer.
+  Wind_Mid_Dir                      degrees true         No       Heading middle winds aloft layer.     
+  Wind_Mid_Top                      meters               No       Altitude MSL of top of middle winds aloft layer.
+  Wind_Mid_Turb                     integer              No       Turbulence factor of middle winds aloft layer.
+                                                                  0=no turbulence  255=very turbulent.
+  Wind_Mid_Type                     integer              No       0-steady, 1=gusty.    
+  Wind_Mid_Vel                      knots                No       Wind speed of middle winds aloft layer.
+
+
+  Wind_Surf_Depth                   meters               No       Altitude AGL of top of surface winds layer.
+  Wind_Surf_Dir                     degrees              No       heading surface winds layer is blowing from.   
+  Wind_Surf_Turb                    integer              No       Turbulence factor of middle winds aloft layer.
+                                                                  0=no turbulence  255=very turbulent.                      
+  Wind_Surf_Type                    integer              No       Type of surface winds layer.
+  Wind_Surf_Vel                     knots                No       Wind speed of surface winds layer. 
+  
+
+  Wind_Up_Base                     meters               No       Altitude MSL of base of high winds aloft layer.
+  Wind_Up_Dir                      degrees true         No       Heading high winds aloft layer is blowing from.     
+  Wind_Up_Top                      meters               No       Altitude MSL of top of high winds aloft layer.
+  Wind_Up_Turb                     integer              No       Turbulence factor of middle winds aloft layer.
+                                                                  0=no turbulence  255=very turbulent.
+  Wind_Mid_Type                     integer              No       0-steady, 1=gusty.    
+  Wind_Mid_Vel                      knots                No       Wind speed of middle winds aloft layer.
+
+  Yoke_X_Position                   integer              No      -16383=full left, 16383=full right 
+  Yoke_Y_Position                   integer              No      -16383=full up(nose down),16383=full down(nose up)
+
+
+    FS6/98 variables (only accessible via APLC32) 
+
+  SYSVAR_8D                                              Yes    Indicated (0) or true airspeed (1) displayed
+  SYSVAR_91                                              Yes    Autocoordination enabled or disabled
+  SYSVAR_A0                                              No     NAV1 OBS VOR/LOC needle deviation
+  SYSVAR_A1                                              No     NAV1 OBS Glide Slope needle deviation
+  SYSVAR_A3                                              Yes    Adventure sounds on / off
+  SYSVAR_A4                                              Yes    Adventure message bar on / off
+  SYSVAR_A5                                              No     Lessons mode 1 = Instructor 2 = Student.
+       
+  FS98 only variable.
+  
+  SYSVAR_AA                                              Yes    Unknown.
+
+  The APLC32 documentation does not indicate the values, or units of
+  measure regarding these FS6/98 only variables.
+
+6) Reserved variables/words
+
+   Variables A-Z are reserved, you can read them write to them, but
+   you cannot declare them.  Command verbs are reserved words. 
+
+ Interesting enough declaring command verbs as variables will not
+ cause an error. But when you try to assign a value to these varibles
+ you will then recieve an error from the compiler.
+
+ APLC32:  APLC32 "will" flag this as an an error on declaration. 
+
+            
+            
+            
+    
+    
+    INDEX: 
+            
+                 
+
+ COMPILER ERROR MESSAGES 
+
+  With regards to debugging, remember that one error will likely cause another,
+  so fix each bug one by one, instead of trying to fix them all at once. You
+  may inadvertantly cause a problem that did not exist. 
+
+
+
+ 1)  "Extra characters on line"
+  
+   possible causes:   a) Characters to the right of a "Then" statement.
+                      b) Declaration, and initialization on the same line
+
+
+ 2)  "THEN expected"
+
+   possible causes:    a) THEN Statement missing after IF
+                       b) THEN not on same line as IF.  
+
+
+ 3) "Unrecognized command 'THEN"
+
+   possible causes:    a) THEN keyword appearing on line with no IF
+
+
+ 4) "Unrecognized command 'command'
+
+                       a) Label with no semicolon to the right.
+
+   Note: Unrecognized command almost always means the first keyword of that
+         line the compilier does not recognize as part of the language.  
+
+
+ 5)  "ENDIF with no IF"
+
+   possible causes:    a) IF with no matching ENDIF
+                       b) Misplaced THEN,ELSE, or ELSEIF
+
+
+ 6) "Duplicate variable name 'variable'
+
+   possible causes:    a) Variable name already declared elsewhere
+                       b) Declaring an already reserved variable (Like A-Z)
+
+
+ 7) Unbalanced quotation marks
+
+    possible causes:  String constant with only one double quote.
+
+
+
+ 8) "Operand Expected"  
+
+    possible causes:   a) Attempt assign string value in variable.
+
+
+ 9) Illegal Character"
+
+                       a) A non-standard ASCII character was used.
+
+
+ 10) Missing LABEL 'label' referenced at line #
+
+    possible causes:   a) Label reference at the line number mis-named, or
+                          does not exist anywhere within the program.
+
+            
+    
+    
+    INDEX: 
+            
+            Adventure Sites (freeware) 
+            Mike Marando's Flight-Sim Uploads Page 
+            Listing of FS5 adventures uploaded to IUP (M.Marando/Avsim) 
+            Listing of FS6 adventures uploaded to IUP (M.Marando/Avsim) 
+            Flightsim.com (Must be a member (free)) 
+            Microwings Adventures downloads 
+            Patrizio Migliola's Flight Sim Adventure Page 
+            Fs5 adventures at Wings.ark.com 
+            Fs6 adventures at Wings.ark.com 
+            Search Mike Marando's IUP uploads list 
+            Complete list of file uploaded to IUP since 5/11/95 
+            Joop Raasvelds Adventure homepage 
+            John's Flight Simulation Adventures 
+            Adventure Sites (Shareware/Commercial) 
+            Pro-Sim FS5 adventures 
+            Aerosoft Airline Flights for FS6 and FS5 
+            UK Adventure Creator 
+            ATC Approach Controller 
+            Real ATC homepage 
+            Related TOOLS/UTILITIES 
+            Flight shop Converter for FS95 
+            Flight shop Converter for FS98 
+            APLC32 APL compiler ver 1.19 
+            AAFWAV.ZIP Replacement adventure .Wav files for FS95. 
+            FSFS501.EXE Flight Shop 5.01 Patch 
+            FS95 patch to fix missing ILS transmitters 
+            Math Maessen Flight Planner 
+            Final Approach & Navigator site 
+            FSFSIMP.ZIP Importer to insert Navaid information into the FSFS ATC 
+            Workshop database 
+            Misc Tools/Utilities/Sites 
+            Pre-Flight center 
+            Aircraft dynamics Editor 
+            Microwings 
+            Recipricol Links 
+            URLS spotted in Flight-Sim@grove.iup.edu 
+            Aviation & Computers 
+            Wings.Ark.Com 
+            John's Flight Simulation Adventures 
+            
+    
+    
+    INDEX: 
+            
+              
+
+  Frequently Asked Questions (FAQ) 
+
+   Flight Shop ATC Workshop /APL Programming FAQ 
+
+
+     
+  How do I get the source code of Adventure Workshop Generated adventures ? 
+
+   The ATC workshop writes the source code to your hard drive, then deletes it
+   when the compilation process is complete. You can either prevent the Workshop
+   from deleting the file, or undelete afterwards. Below is all the ways I am aware
+   of to get the source of FSFS generated adventures.
+
+
+   1) Add a parameter on the RUN line for FSFSADV.EXE the string "www.microwings.com"
+
+     Ex: C:\FLTSHOP\FSFSADV.EXE  www.microwings.com  
+
+   This will cause the generation process to be interrupted with an error message, but
+   the adventure source will not be deleted. 
+
+   2)  Download the utility   ftp://wings.ark.com/wings/fs5/utility/sts.zip 
+       apparently this utility saves the source as well, though I have not tried it.
+ 
+   3) Have file manager (or explorer) open while uploading file to FSS when source file (.txt) appears in 
+      directory open the source file adventure generator will stop with error, but source will remain 
+      open then just save the source. This requires a little timing as it must be opened before the
+      generator process deletes it, but there's more than enough time.
+
+   4) "Un-delete" the source in delete sentry mode.
+
+
+    Option (1) appears to be the easiest.
+
+
+
+  Where can I find adventures created by others on the Internet ? 
+
+ Go to the  Adventure Sites  section to find links to internet sites with adventures.
+
+
+
+  Sounds:
+
+  I've got some pretty good .wav files I'd like to use with my adventures, but
+    when I play them in FS5, they come out sounding like those old record players
+    with a broken needle ? 
+
+    Probably either you recorded the .wav file in a format incompatibe with
+    Flight Simulator.
+
+
+
+    What is the best Sound Editor for creating .WAV files used in FS5. ?
+
+    Well Creative Lab's wav studio (the one that comes packaged with Sound Blaster)
+    was used to record the stock .wav files that are uses in the FSFS ATC adventures.
+
+    But really any good sound recorder will work, I've used the default sound recorder
+    that came with Windows 3.1, and Windows NT, and both worked fine with no problem.
+    (See question... about what the proper recording format shouyld be)
+
+
+
+    Are there any hidden variables in Fs5, I mean those not mentioned in the manual ?
+
+      There are no hidden variables, the manual completely describes variables 
+      accesible via APL for FS5.
+
+
+
+ How do you create custom modules to be used with the ATC generated adventures.
+
+    When you select a custom module, the ATC workshop when creating the source
+    code for the adventure defines a "label" name for the custom module at compile
+    time. Then inserts that label just prior to the insertion of the custom module.
+
+    When the adventures goes through its main loop it with every interation through
+    the loop jumps to your custom module. 
+
+  ; Begin custom module
+  ; put code below
+   ...
+   ...
+   ...
+  RETURN; <--- Don't forget the return 
+ 
+
+  Save the file in your custom module directory, then select it when you submit your flight 
+  plan to FSS.
+
+
+
+  Page 119 of the manual states the creation of an autothrottle is possible via
+  APL, what is the name of the function that supports this ?  
+ 
+ The mention of this in the manual was in error, such a routine not possible via FSFS
+ APL. I've only seen it done through the Technic Direct HQ panels
+ and now of course FS98.
+
+
+
+
+ 5)  What are the numeric values for the Keyboard inputs in APL ? 
+
+    See the appendix for a listing of the key values for FS5, and Fs6.
+
+     But note to stay consistent with flight simulator versions 5 and 6 you should
+    use the KV() function instead of referencing the key value directly.
+
+
+
+
+ I have purchased Flight Shop, but I don't have FS5.1 how do I install it ?
+
+ Instructions for installing Flight Shop without FS5.1 can be found at ..
+
+  http://www.microwings.com/mwfsfs95i.html 
+
+
+
+ How can I create a flight plan that includes airports outside the U.S.?  I'm would like to 
+         fly atc controlled flights in Europe, but there are no European navaids in the Flight Shop 
+         database. 
+
+    1) Download the Flight Shop importer from  http://www.microwings.com/ftp/adventures/fsfsimp.zip
+
+    2) Download the european import files, and use the importer to insert the European navaid
+       information into your flight shop database.
+
+      The documentation describes how to add particular Navaids directly via text files.
+
+       Below are links to Import file uploaded to the IUP site.
+
+ belimp.zip  Import file(s) for EUROPE 2 BELGIUM.
+br1_impa.zip Import file(s) for Northeast Brazil.
+ brcs1imp.zipImport file(s) for the Southern,Southeastern,and Center-Western regions of Brazil.
+ canimpv2.zip Import file(s) for Canada Scenery.
+ canw-im2.zip Import file(s) for Alfred Grech's CANADA-West scenery.
+ cane-imp.zip Import file(s) for Alfred Grech's 3 CANADA sceneries.
+ canc-imp.zip Import file(s) for Alfred Grech's 3 CANADA sceneries.
+ cnwst-im.zip Import file(s) for Alfred Grech's CAN-WEST1 Scenery.
+ euroatc.zip Import file(s) for the EUROPE1 and 2 addons.
+ eur2imp.zip Import file(s) for Europe 2.
+ fsfsupd.zip An empty Flight Shop database, modified version of FSFSAdv.exe, and several FSFS database import files.
+ fsscotdb.zip Import file(s) for Scotland4.
+ fra_imp2.zip Import file(s) for Add all NDBs and all VORs in France 5 by Alfred Grech.
+ fsukdat.zip Import file(s) for  All of the airfields and navaids for England 1. 
+ japanimp.zip Import file(s) for Japan.
+ jap4fsfs.zip Import file(s) for MS Japan add-on.
+ mexdata.zip  Import file(s) for David Martinez's MEX-NAV7.zip.
+ safsnav.zip Import file(s) for South Africa.
+ usa_fix.zip Import file(s) for US Intersections 
+
+
+
+
+  It is possible to use more then three custom modules in the ATC Workshop, (from the screen where you 
+  upload your flight plan) ?.
+
+  You can't insert more than 3 custom modules via the ATC Workshop.
+
+  However. you can merge as many custom modules as you want into one of the 3 modules the ATC Workshop
+  will use.
+
+  There is a freeware program available at ftp://ftp.iup.edu/flight-sim/uploads/c/custom00.zip 
+  that will merge several custom modules into one.
+
+  The idea is rather simple, just have a single routine that acts just like the main routine.
+
+ 
+
+  Example:
+
+  ;Main program
+
+   GOSUB MODULE_1;  <--- the ATC workshop included modules
+   GOSUB MODULE_2   
+   GOSUB MODULE_3
+
+  ;Custom module section
+
+   Module_1:          <--- Your merged custom module as one of the Workshop inserted modules
+  
+    GOSUB  START
+    GOSUB  CLEARANCE
+    GOSUB  PUSHBACK
+    ...
+    ...
+    ...
+   RETURN
+
+   Module_2:  
+   ...
+   ...
+   RETURN
+    
+   Module_3:  
+   ...
+   ...
+   RETURN
+
+
+
+
+ Do I need Flight Shop to run downloaded adventures converted for FS6?
+
+  Flight shop is not needed to run converted adventures, nor is it needed to convert adventures 
+  created for FS5.
+
+
+
+ Is there a way to change the runway that ground control assigns you when you're creating a Flight Shop 
+ Adventure. I always get the same runway which was great for a Cessna, but too small for a 747.
+
+ In the ATC Workshop select Databases/Runways in the main menu, select the Airport you wish
+ and delete the runways you don't want, leaving only the one you do want.
+
+ Also you can check the "long runway req'd" option as a solution
+ to this in the "Pre-Flight/File plane with flight service/Options" menu
+ (The FSFS501 patch is required for this option).
+
+
+
+ When flying FSFS generated ATC adventures. Everytime I choose the CTRL-W option noting happens. 
+
+ You must first  your COM radio to flight service (FSS) first.
+
+
+
+Is there a way to change the flight plan altitude during flight 
+
+ Check the microwings dowloads area, there's a custom module that can be added
+ that will allow you to change flight levels during an adventure.
+
+  ALTCHG.ZIP I believe is the filename.
+
+
+
+ During ATC Workshop adventures when I press CTRL-I nothing  happens.
+
+ CTRL-I only works when tuned into Flight Service. It  toggles you in/out of IFR or VFR.
+
+ 
+ How can I adjust the volume so that I may better hear the adventure ATC voices--the volume 
+ is too low compared to the engine noises.
+
+  Adjust the following settings in FSFS.INI in your flight sim directory:
+
+ Its is suggest  the initial volume setting be 255 and work your way down from there
+
+  engine_only_volume = 200
+  wave_volume = 100
+  engine_with_wave_volume = 150
+
+
+ The other modifiable option in the FSFS.INI file is the adventure speed.
+
+ adventure_exec_speed=4     <-- number of instructions processed per second 
+
+
+
+
+ I have downloaded the new fs95 .wav (AAWAV.ZIP) files and have moved them to the
+     FS95 \SOUND directory, but I get no sound. When I convert my adventures I can use them
+     fine, except that I have no voice ATC, where should these files be located? 
+
+    A: Place your new wav files in the Flight Simulator\Adv\Wav directory.
+
+
+
+  
+ APL - ATC Workshop Problems/Solutions 
+
+
+
+Issue/Problem:  
+
+ a) On startup of ATC workshop an error message "Dbase error - 2#3041 Incompatble
+    dabase version..."
+
+ b) On startup of ATC workshop an error message "Dbase error 1#53 (File not found)
+    ..."
+
+
+
+Probable Cause:
+
+ This problem occurs on Windows 95 systems. It is caused by VBDB300.DLL being 
+ installed to the Flight Shop directory FLTSHOP and an incompatible file of the
+ same name in the WINDOWS\SYSTEM directory. ATC workshop needs the newer file
+ but Windows 95 gets the older file from the SYSTEM directory by default. 
+
+Solution:
+ 
+ copy VBDB300.DLL from the FLTSHOP directory to your WINDOWS\SYSTEM directory.
+
+
+
+
+Issue/Problem:  
+On startup of ATC Workshop an error message, "Dbase error - 3#3050..." 
+
+Probable Cause:
+
+
+ SHARE not being present on Windows 3.1 systems. 
+
+Solution:
+
+ Place INSTALL=C:\DOS\SHARE.EXE/L:35 in config.sys and restart system. 
+
+ Place SHARE /L:35 in autoexec.bat, some systems may need to raise the 35 to 50
+     or higher.
+
+ Note: MS recommended that SHARE be placed in the AUTOEXEC.BAT rather than
+       CONFIG.SYS. If you want to do this then the appropriate line is
+
+       C:\DOS\SHARE/L:35
+
+
+
+Issue/Problem:  
+
+On startup of ATC Workshop an error message,
+  
+      "Device attached to the system is not functioning." (Windows 95)
+ 
+Probable Cause:
+
+      a) Running setup when a 3rd party shell is involved (such as Norton desktop)
+   
+      b) Damaged or out of data VBRUN300.DLL file.
+
+Solution:
+
+      a) Deactivate the shell, the restart setup.
+      b) Replace VBRUN300.DLL file with the one on FSFS install disk or CD.
+
+
+
+
+Issue/Problem:  
+
+My FSFS PLANE_LAT, and PLANE_LON  variables doesn't appear to be correct after I 
+ran my FS5 adventure through the FSFS converter.
+ 
+Probable Cause:
+
+
+ This is a bug with the converter (no patch available), after conversion the PLANE_LAT 
+ value is off by a factor of 3.277..etc. PLANE_LON is counted from 0 to 360 instead of 
+ from -180 to +180.
+
+
+Solution:
+
+
+  Adjust for the offset values.
+
+
+Example:
+
+  NEW_PLANE_LAT = PLANE_LAT * 3.277875893752
+  IF PLANE_LON > 180 THEN
+     NEW_PLANE_LON = PLANE_LON - 360
+  ELSE
+     NEW_PLANE_LON = PLANE_LON
+  ENDIF
+
+
+  Note:  The FS98 Converter fixes this problem.
+
+ APCL32: apparently fixes this problem at compile time.
+
+
+
+
+Issue/Problem:  
+
+On startup of ATC Workshop an error message,
+
+  a) "Dbase error 2#3024 Could not find file. Flight shop could not properly 
+      access the navaid airport database." 
+
+  b) "Dbase error - 3#3053 (Too many client tasks)
+
+  c)  On access of the runway database there is an error message
+      MS-DOS Lock files exceeded...".
+
+Probable Cause:
+
+  
+  SHARE not having enough files allocated.
+
+
+Solution:
+
+ 
+      In CONFIG.SYS find the line INSTALL=C:\DOS\SHARE.EXE/L:35. Change 35 to 50.
+      save and restart system. If this does not work for you raise the number to 
+      100.
+
+
+
+ Issue/Problem:
+
+         When I try to create a flight plan under Flight Shop's ATC Workshop, it always tells
+         me that my waypoints are only 0.0 miles apart. 
+
+ Probable Cause:
+
+
+         Your CONFIG.SYS file does not have the SHARE statement in it, or if it does, the value 
+         set for it is too small. 
+
+ Solution:
+
+
+         Try using a setting of SHARE /L:25. If this still happens, then increase the 25 to a larger 
+         number. This problem has only been noted in Windows 3.1.
+
+
+
+
+Issue/Problem:  
+
+   On uploading a flight plan fo Flight Sim. Error message
+
+   "For some unexpected reason the adventure will not compile." No .ERR file
+    is created and no adventure is created, systems may even hang. 
+
+Probable Cause(s):
+
+
+     a) APLC.PIF in the FLTSIM\ADV directory, os configured to require 8192 KB
+        of EMS memory. It doesn't require any. 
+
+     b) APLC directory path is incorrect    
+
+     c) Cirrus Logic graphics cards out of date graphics driver.
+
+
+Solution:
+
+
+    a) Using the Windows .PIF editor change this value to 0, save the file and 
+       retry.
+
+    b) Verify that path to APLC.EXE is set to your flight simulator plus the
+       ADV directory. (under options select SET path to ADV compiler). set correct
+       path to your FS, and ADV directories.
+
+    c) If this error occrs after the screen flashes or the system hangs
+       contact Cirrus for an update  http://www.cirrus.com/support 
+
+
+
+
+Issue/Problem:  
+
+    On uploading a flight plan to Flight Simulator:
+    the error..
+                "The APLC.EXE adventure compiler could not be found. Because
+                 of this, an adventure file was not created.
+ 
+Probable Cause:
+
+
+           Invalid path defined.
+
+Solution:
+
+
+    b) Verify that path to APLC.EXE is set to your flight simulator plus the
+       ADV directory. (under options select SET path to ADV compiler). set correct
+       path to your FS, and ADV directories.
+ 
+
+
+
+
+Issue/Problem:  
+
+    on upload a flight plan to flight-sim an error message...
+
+    "...for some reason, the adventure will not complie."
+
+    On inspection of the .ERR files, it says
+   
+    "3003: Only one title per adventure"
+ 
+Probable Cause:
+
+
+     Adventures can only have one TITLE command, likely a custom
+     module contains a TITLE command.
+
+Solution:
+
+ 
+     Remove the title command from the custom module.
+
+
+
+Issue/Problem:  
+
+      On attempt to save a file with just two waypoints, an error message
+      that a mid-point is needed. 
+
+Probable Cause:
+
+
+      The ATC workshop requires 3 waypoints for a valid flight plan.
+      these points are the origin, mid-way point, and destination.
+
+
+Solution:
+
+
+      Insert a mid-way point into the flight plan, and regenerate.
+  
+
+
+
+Issue/Problem:  
+
+         After departing an airport,air traffic control no longer
+         responds
+ 
+Probable Cause:
+
+
+         Aircraft too low, ATC won't respond to aircraft props below
+         500' AGL, and Jets belowe 1500' AGL.
+
+Solution:
+
+
+         Climb.  
+
+
+
+
+Issue/Problem:  
+
+         Turning Off FPAP in an adventure the Aircraft goes out of control.
+ 
+Probable Cause:
+
+
+         1) Aircraft flying too slow when turning of Autopilot.
+
+         2) Aircraft not trimmed properly
+
+Solution:
+
+ 
+         Obvious.
+
+
+
+
+Issue/Problem:  
+
+        After a few minutes into the adventure, the Joystick stops
+        responding. Ctrl-K yields joystick calibrated message. 
+
+Probable Cause:
+
+
+        Conflict in an add-on scenery or utility
+
+Solution:
+
+ 
+         Delete the existing flight simulator directory, reinstall flight-sim, and
+         flight shop.
+
+
+
+
+Issue/Problem:  
+          Aircraft pattern vectors too close to Airport
+
+ 
+ 
+Probable Cause:
+
+Solution:
+ 
+
+         1) Install the in FSFS Patch
+
+         2) In FSFSADV.INI file
+           
+          change VFRAppDist to VFRPatDist
+          change IFRAppDist to IFRPatDist
+
+         You can adjust the distance of the pattern ATC guides you around in, by altering
+         some of the values in the FSFSADV.INI file  The number represents the distance in miles 
+         from the center of the airport at which ATC will start vectoring you. 
+ 
+[VARIABLES]
+LegAppDist = 4     <--- Distance from a waypoing ATC will give you next vector}
+VFRPatDist=10      <--- Pattern distance for VFR flight (10 NM)
+IFRPatDist=20      <--- Pattern distance for IFR flight (20 NM)
+FlightLevel=18000  <--- Altitude where flight level changes from thousands of feet to FL and altimeter is 
+                        set to "standard" 
+FAFAlt=3000        <--- Altitude AGL you will be directed to for Final Aprroach Fix (FAF)
+LongRwyLen=7500    <--- Minimum length of "long runway"
+
+ 
+
+ A complete description of the items in the FSFSADV.INI file can be found at the  microwings  site.
+
+
+
+
+ 
+Issue/Problem:  
+
+      When pressing run Flight Simulator FS doesn not run properly
+      or or error...
+
+       "The KB required value is too large, decrease PIF KB required".
+ 
+Probable Cause:
+ 
+         Attempt to run Flight Simulator from Windows.
+ 
+Solution:
+  
+         FS does not run well from Win31 so don't do that.
+
+
+
+ 
+Issue/Problem:  
+
+   On uploading a flight plan fo Flight Sim. Error message
+
+   "For some unexpected reason the adventure will not compile." 
+    compile." and the .ERR file says
+
+     49: extra character on the line
+     126: ")" expected
+     615: endif with no if
+
+Probable Cause:
+ 
+      Use of National settings typical for some European countries (ie "Point"
+      as thousands separators and "Comma" as decimal separator.
+ 
+Solution:
+ 
+      ATC workshop needs US format, change national settings (using the system 
+      control panel or (in German) "Systemsteurung") to:
+
+   "Comma" (or space") as Thousands Separator "Point" as Decimal Separator.
+
+
+  
+Issue/Problem:  
+      
+On startup of ATC Workshop an error message,
+
+       "Dbase error - 3#3051 (cannot be opened)..."
+
+Probable Cause:
+ 
+          ATC workshop cannot read the database for some reason, perhaps it
+          is corrupt. 
+ 
+Solution:
+ 
+         Reinstall the ATC workshop portion of FSFS.
+
+
+ 
+Issue/Problem:  
+
+    On upload a flight plan to flight-sim an error message...
+
+    "...for some reason, the adventure will not complie."
+
+    On inspection of the .ERR files, it says
+   
+    "6 Description too long, conneot exceed 255 characters."
+     
+Probable Cause:
+ 
+
+      The airports, pilot information, aircraft type and ID, or aircraft performance characteristics 
+      exceeded 255 character limit.
+ 
+Solution:
+ 
+      1) Shorten the information or select another item of that category.
+
+      2) Install the FSFS patch,  FSFS501.EXE 
+
+
+
+ 
+Issue/Problem:  
+
+    On upload a flight plan to flight-sim an error message...
+
+    "Flight shop could not properly finish uploading the flight plan. Try disabling SmartDrives write-behind 
+     caching. Reboot, then  re-upload your flight plan."
+ 
+Probable Cause:
+ 
+
+     FSFS cannot find a resulting .ADV or .ERR file created by the compiler.
+ 
+Solution:
+ 
+     Check the "path to flight simulator" and the "Path to ADV Compiler" under the options menu of ATC Workshop. 
+
+
+
+ 
+Issue/Problem:  
+
+      General protection fault (GPS) error on startup of the ATC workshop.
+
+      The error indicates the problem is with VBRUN300.DLL
+ 
+Probable Cause:
+ 
+      VBRUN300.DLL should be in the \WINDOWS\SYSTEM directory dated  10-07-95.
+ 
+Solution:
+  
+      Get the file of the installation disk (#6) or CD, expand it and place it in that directory.
+        
+
+
+ 
+Issue/Problem:  
+  
+      On startup there's an error mesage that the THREED.VBX is out of date.
+      
+Probable Cause:
+ 
+      There is either a duplicate THREED.VBX or the file failed to be updated during install. THREED.VBX 
+      should be in the \WINDOWS\SYSTEM directory dated 10-07-95.
+ 
+Solution:
+ 
+      Get the file of the installation disk (#6) or CD, expand it and place it in that directory.
+
+
+
+ 
+Issue/Problem:  
+
+      On attempt to save an adventure, an error message that waypoints must be more than 4 miles apart. But 
+      your way points are already that far apart.
+         
+Probable Cause:
+ 
+
+       Win 3.1 : number allocated for shared files is too low, or Share.exe not running.
+ 
+Solution:
+ 
+      1) Check SHARE was loaded into memory     mem/c/p 
+
+      2) Increase shared files to 50
+
+      3) In config.sys  INSTALL=C:\DOS\SHARE.EXE/L:50
+
+      4) Restart system after making changes.
+
+ 
+Issue/Problem:  
+
+       Error message only 28 waypoints are allowed in an adventure. Your flight plan does not include 
+       that many.
+     
+ Probable Cause:
+
+Solution:
+ 
+ 
+        Only reported solution,  re-install the ATC workshop portion of Flight-Shop.
+
+
+
+ 
+Issue/Problem:  
+
+         Cannot scroll through any of the ATC Workshop databases.  
+ 
+Probable Cause:
+ 
+       The scroll Bars shown in the manual are not part of the release.         
+ 
+Solution:
+ 
+       Search by typing in ID name. 
+
+
+
+ 
+Issue/Problem:  
+         
+      After departure, receive message you have departed the wrong runway.
+ 
+Probable Cause:
+ 
+     1) Failed to depart close to the assigned heading.
+
+     2) New database entries Magnetic heading instead of true heading entered.
+
+     3) The runway numbers and the runway headings are reversed in the Runways Database. 
+
+ 
+Solution:
+ 
+
+ Comments:  Looking at the source code it appears there's a 15 degree variance
+          allowed between the value in the database and where the pilot can
+          depart before recieving this error. 
+
+        1) Depart closer to assigned heading.
+ 
+        2) Use TRUE headings for runways in the runways database.
+
+        3) Go into the database and swap them so that the runway numbers and headings are
+           in synch.
+
+
+
+ 
+Issue/Problem:  
+
+     Adding an Airport database with a LON of E/W-000 is not accepted
+Probable Cause:
+
+Solution:
+ 
+
+      1)  Install FSFS path  FSFS501.EXE 
+
+      2)  Without the patch change LON value to E/W-001, and add it to the databse, then change it to E/W-000 
+          and "accept edits". 
+
+
+
+
+ 
+Issue/Problem:  
+
+              GLIDE_SLOPE 
+              VOR_1_LAT
+              VOR_1_LON
+              VOR_2_LAT
+              VOR_1_LON
+              ADF_LAT
+              ADF_LON
+              AIR_DISTANCE
+              GROUND_DISTANCE
+
+               Return wrong values in the southern latitudes.
+               
+Probable Cause:
+
+Solution: 
+ 
+
+       Install FSFS path  FSFS501.EXE 
+
+
+
+ 
+Issue/Problem:  
+
+             On attempt to re-open flight plan error message...
+
+             "Invalid flight plan or "Unable to Read"   
+ 
+Probable Cause:
+ 
+
+            Waypoints in flight plan missing from database, likely they were deleted after plan was 
+            created.
+
+ 
+Solution:  Re-install Flight Shop (and this time make a backup of your database)
+ 
+
+
+
+ 
+Issue/Problem:  
+
+           Adventures starting at Meigs field had altitude for field changed. 
+ 
+Probable Cause:
+ 
+
+            Curropted World.Vis file.
+ 
+Solution:
+ 
+
+             Reinistall FS5.1 to get fresh copy of world.vis. 
+
+
+
+ 
+Issue/Problem:  
+
+          Radar check report speed, altituide, and course as zero.  
+ 
+Probable Cause:
+
+Solution:
+ 
+
+        1) Install FSFS path  FSFS501.EXE 
+ 
+        2) Without patch start the adventure with voice, and text option.
+
+
+
+ 
+Issue/Problem:  
+
+       Adventure that starts in SAT with a departure from Rwy 12R immediately after departure from that 
+       runway. ATC says you departed wrong runway, etc
+                        
+Probable Cause:
+ 
+ 
+       Error in the ATC runway database.
+ 
+Solution:
+ 
+
+       Open database, find entry
+        select 12R
+        enter 132 for the hdg rwy 1
+        enter 312 for rwy 2
+
+ other known ATC database errors are
+
+                                HDG         HDG 
+        SAN   Rwy 9/27   rwy 9  092  Rwy 27 272
+        HPN   Rwy 11/29  Rwy 11 102  Rwy 29 282
+        HPN   Rwy 16/34  Rwy 16 150  Rwy 34 330 
+        JFK   Rwy 14/32  "Delete" (no longer exists)
+        MHT   Rwy  6/22  Rwy  6 042  Rwy 22 222
+        MHT   Rwy 17/35  Rwy 17 156  Rwy 35 336
+
+ ILS    LAX   Rwy 7L/25R sh be 111.1/109.9 
+
+ Navaids  DSM freq should be 117.50
+
+
+
+ 
+Issue/Problem:  
+
+        On attempt to read flight plan from floppy error message...
+
+         "Path not found".
+ 
+Probable Cause:
+ 
+
+         Reading flight plans from floppys not supported.
+
+ 
+Solution:
+ 
+
+         Don't do that.
+ 
+
+
+
+       
+            
+    
+    
+    INDEX: 
+            
+                 
+
+ FS5 KEYBOARD (KEY) Values for FSFS APL
+
+
+ 
+  These are based on the standard IBM PC US Keyboard, they may vary a bit
+  for different models.
+
+ Note: to stay consistent with flight simulator versions 5 and 6 you should
+  use the KV() function instead of referencing the key value directly.
+
+
+ 
+
+ F11, F12, PAUSE/BREAK, RETURN, and KEYP('ENTER') return No value
+
+
+  0  default value    
+  1  ESC              51
+  2  '1'              52  '.'
+  3  '2'                 53 '/'
+  4  '3'                 54
+  5  '4'                 55
+  6  '5'                 56
+  7  '6'                 57  SPACEBAR
+  8  '7'                 58  CAPS
+  9  '8'                 59  F5
+ 10  '9'                 60  F4
+ 11  '0' (ZERO)          61  F6
+ 12  '-'                 62
+ 13  '='                 63
+ 14 BACKSPACE                 64  F3
+ 15 TAB                  65  F7
+ 16 'q'                  66  F2
+ 17 'w'                  67  F8, F9
+ 18 'e'                  68  F1, F10
+ 19 'r'                  69 NUM LOCK    
+ 20 't'                  70 SCROLL LOCK, KEYP('/'), KEYP('*')
+ 21 'y'                  71 HOME, KEYP('7')
+ 22 'u'                  72 UP ARROW, KEYP('8')
+ 23 'i'                  73 PAGE UP, KEYP('9')
+ 24 'o'                  74 KEYP('-')
+ 25 'p'                  75 LEFT ARROW, KEYP('4')
+ 26 '{'                  76 KEYP('5')
+ 27 '}'                  77 RIGHT ARROW, KEYP('6')
+ 28 RETURN/ENTER      78 KEYP ('ENTER') 
+ 29                   79 END, KEYP ('1')
+ 30 'a'                  80 DOWN ARROW, KEYP('2')
+ 31 's'                  81 PAGE DOWN , KEYP('3')
+ 32 'd'                  82 INSERT, KEYP('0')
+ 33 'f'                  83 DELETE, KEYP('.')
+ 34 'g'                  84 
+ 35 'h'                  85
+ 36 'j'
+ 37 'k'
+ 38 'l'
+ 39 ';' Save sit
+ 40  (') SINGLE QUOTE
+ 41  (`) APOSTROPHE
+ 42 
+ 43  '\'
+ 44  'z'
+ 45  'x'
+ 46  'c'
+ 47  'v'
+ 48  'b'
+ 49  'n'
+ 50  'm',',' Comma
+
+
+  
+   SHIFT 
+
+ Note SHIFT-'[' frze my system  
+
+257 ESC             
+258  '!'                 
+259  '@'                 
+260  '#'                 54
+261  '$'                 55
+262  '%'                 56
+263  '^'                313  SPACEBAR
+264  '&'                314  CAPS
+265  '*'                315  F5
+266  '('                316  F4
+267  ')'                317  F6
+268  '_'                 62
+269  '+'                 63
+270 BACKSPACE           320  F3
+271 TAB                 321  F7
+272 'Q'                 322  F2
+273 'W'                 323  F8, F9
+274 'E'                 324  F1, F10
+275 'R'                 325 NUM LOCK    
+276 'T'                 326 SCROLL LOCK,  KEYP('*')  --> 70 '/'
+277 'Y'                  71 HOME
+278 'U'                  72 UP ARROW
+279 'I'                  73 PAGE UP
+280 'O'                  74 
+281 'P'                  75 LEFT ARROW
+282 '['                  76 
+283 ']'                  77 RIGHT ARROW
+284  RETURN/ENTER      78  
+ 29                   79 END
+286 'A'                  80 DOWN ARROW
+287 'S'                  81 PAGE DOWN 
+288 'D'                  82 INSERT
+289 'F'                  83 DELETE
+290 'G'                 327  KEYP('7')   
+291 'H'                 328  KEYP('8')
+292 'J'                 329  KEYP('9')
+292 'K'                 330  KEYP('-')
+294 'L'                 331  KEYP('4') 
+295 ':' Save sit        332  KEYP('5')
+296 ('"') DOUBLE QUOTE  333  KEYP('6')
+297  (~) tilde          334  KEYP('+')
+ 42                     335  KEYP('1')
+299  '|'                336  KEYP('2')
+300  'Z'                337  KEYP('3')
+301  'X'                338  KEYP('0')
+301  'C'                339  KEYP('.')
+303  'V'                340
+304  'B'
+305  'N'
+306  'M',',' Comma
+307  '<' 
+308  '>'
+309 '?'
+
+   CTRL
+
+
+
+513 ESC              51
+514  '1'              52  '.'
+515  '2'                 53 '/'
+516  '3'                 54
+517  '4'                 55
+518  '5'                 56
+519  '6'                569  SPACEBAR
+520  '7'                570  CAPS
+521  '8'                571  F5
+522  '9'                572  F4
+523  '0' (ZERO)         573  F6
+524  '-'                 62
+ 13  '='                 63
+526 BACKSPACE           576  F3
+527 TAB                 577  F7
+528 'q'                 578  F2
+529 'w'                 579  F8, F9
+530 'e'                 570  F1,
+                        580 F10
+531 'r'                  69 NUM LOCK (no value)
+532 't'                 582 SCROLL LOCK, KEYP('/'), KEYP('*')
+533 'y'                 583 HOME, KEYP('7')
+534 'u'                 584 UP ARROW, KEYP('8')
+535 'i'                 585 PAGE UP, KEYP('9')
+536 'o'                 586 KEYP('-')
+537 'p'                 587 LEFT ARROW, KEYP('4')
+??? '{'                 588 KEYP('5')
+538 '}'                 589 RIGHT ARROW, KEYP('6')
+540 RETURN/ENTER        590 KEYP ('ENTER') 
+ 29                     591 END, KEYP ('1')
+542 'a'                 592 DOWN ARROW, KEYP('2')
+543 's'                 593 PAGE DOWN , KEYP('3')
+544 'd'                 594 INSERT, KEYP('0')
+545 'f'                 595 DELETE, KEYP('.')
+546 'g'                 
+547 'h'                  85
+548 'j'
+549 'k'
+550 'l'
+551 ':' Save sit
+ 40  (') SINGLE QUOTE
+553 (`) APOSTROPHE
+ 42 
+555  '\'
+556  'z'
+557  'x'
+558  'c' 
+559  'v'
+560  'b'
+561  'n'
+562  'm',',' Comma
+
+ 
+
+
+            
+    
+    
+Page by Ernie Alston 71302.3415@Compuserve.com)  

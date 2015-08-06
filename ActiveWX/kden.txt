@@ -1,0 +1,21 @@
+
+Latest METAR Observation(s) for KDEN
+
+
+
+KDEN
+The most recent METAR observation from KDEN in our system was generated at the 
+source at:
+1997/11/09 22:17 UTC 
+The observation is:
+KDEN 092217Z 06004KT 2 1/2SM -SN BR SCT013 BKN020 OVC026 M02/M04 A3019 RMK AO2 
+P0000 
+
+
+
+Data distribution via the Internet is not considered an operational delivery 
+mechanism by the NWS due to our inability to insure access to this service, 
+therefore, the information available here shall not be used for flight planning 
+or other operational purposes. Please see our additional disclaimer.
+
+Author: Allan Darling, NWS Office of Systems Operations <
